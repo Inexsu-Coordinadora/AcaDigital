@@ -1,0 +1,26 @@
+meta {
+  name: Crear Programa Académico
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/programas-academicos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Ingeniería de Sistemas",
+    "descripcion": "Programa académico que forma profesionales en el desarrollo de software y sistemas de información",
+    "nivel": "Pregrado",
+    "modalidad": "Presencial",
+    "duracionValor": 10,
+    "duracionUnidad": "semestres"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

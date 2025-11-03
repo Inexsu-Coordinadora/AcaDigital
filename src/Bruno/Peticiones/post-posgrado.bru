@@ -1,0 +1,27 @@
+meta {
+  name: Crear - Posgrado Semi-Presencial
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:3000/programas-academicos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Maestría en Inteligencia Artificial",
+    "descripcion": "Programa de posgrado especializado en IA y machine learning",
+    "nivel": "Posgrado",
+    "modalidad": "Semi-Presencial",
+    "duracionValor": 4,
+    "duracionUnidad": "semestres"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+

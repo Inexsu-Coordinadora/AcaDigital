@@ -1,0 +1,15 @@
+meta {
+  name: Listar Todos los Programas
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/programas-academicos
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
