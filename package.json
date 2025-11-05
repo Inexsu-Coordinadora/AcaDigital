@@ -2,12 +2,14 @@
   "name": "acadigital",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node ./dist/index.js",
-    "dev": "tsnd --respawn --clear src/index.ts"
-  },
+"scripts": {
+"dev": "tsx watch --env-file .env src/presentacion/http/server.ts", 
+  "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
+  "test": "jest",
+  "start": "node dist/server.js"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OscarCalle0/AcaDigital.git"
@@ -33,6 +35,7 @@
     "@types/pg": "^8.15.6",
     "@types/sequelize": "^4.28.20",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }
