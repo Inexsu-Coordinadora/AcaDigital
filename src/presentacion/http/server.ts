@@ -11,6 +11,17 @@ import {
 import { PostgresPeriodoAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/periodo-academico.pg.repository.js';
 import { registerPeriodoAcademicoRoutes } from './routes/periodo-academico.routes.js';
 
+//asignatura
+import {
+  CrearAsignaturaUseCase,
+  ObtenerAsignaturasUseCase,
+  ObtenerAsignaturaPorIdUseCase,
+  ActualizarAsignaturaUseCase,
+  EliminarAsignaturaUseCase
+} from '../../core/aplicaciones/asignatura/index.js'; 
+import { AsignaturaPGRepository } from '../../core/infraestructura/postgres/repositorio/asignatura.pg.repository.js';
+import { asignaturaRoutes } from './routes/asignatura.routes.js';
+
 //programa academico
 import {
   CrearProgramaAcademicoUseCase,
@@ -31,6 +42,13 @@ const obtenerProgramaPorIdUseCase = new ObtenerProgramaAcademicoPorIdUseCase(pro
 const actualizarProgramaUseCase = new ActualizarProgramaAcademicoUseCase(programaRepository);
 const eliminarProgramaUseCase = new EliminarProgramaAcademicoUseCase(programaRepository);
 
+const asignaturaRepository = new AsignaturaPGRepository ();
+const crearAsignaturaUseCase = new CrearAsignaturaUseCase(asignaturaRepository);
+const listarAsignaturasUseCase = new ObtenerAsignaturasUseCase(asignaturaRepository);
+const obtenerAsignaturaPorIdUseCase = new ObtenerAsignaturaPorIdUseCase(asignaturaRepository);
+const actualizarAsignaturaUseCase = new ActualizarAsignaturaUseCase(asignaturaRepository);
+const eliminarAsignaturaUseCase = new EliminarAsignaturaUseCase(asignaturaRepository);
+
 const periodoRepository = new PostgresPeriodoAcademicoRepository();
 
 const crearPeriodoUseCase = new CrearPeriodoUseCase(periodoRepository);
@@ -50,6 +68,16 @@ registerProgramaAcademicoRoutes(
   actualizarProgramaUseCase,
   eliminarProgramaUseCase
 );
+server.register(asignaturaRoutes, {
+    prefix: '/api/v1/asignaturas',
+    dependencies: {
+        crearAsignaturaUseCase,
+        listarAsignaturasUseCase,
+        obtenerAsignaturaPorIdUseCase,
+        actualizarAsignaturaUseCase,
+        eliminarAsignaturaUseCase,
+    }
+});
 registerPeriodoAcademicoRoutes(
   server,
   crearPeriodoUseCase,
