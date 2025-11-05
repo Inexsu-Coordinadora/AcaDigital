@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
+  "scripts": {
     "build": "tsc",
     "start": "node ./dist/index.js",
     "dev": "tsnd --respawn --clear src/index.ts"
@@ -27,7 +27,6 @@
     "typescript": "^5.9.3",
     "uuid": "^13.0.0",
     "zod": "^4.1.12"
- 
   },
   "devDependencies": {
     "@types/node": "^24.9.2",
