@@ -11,7 +11,25 @@ import {
 import { PostgresPeriodoAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/periodo-academico.pg.repository.js';
 import { registerPeriodoAcademicoRoutes } from './routes/periodo-academico.routes.js';
 
+//programa academico
+import {
+  CrearProgramaAcademicoUseCase,
+  ListarProgramasAcademicosUseCase,
+  ObtenerProgramaAcademicoPorIdUseCase,
+  ActualizarProgramaAcademicoUseCase,
+  EliminarProgramaAcademicoUseCase
+} from '../../core/aplicaciones/programa-academico/index.js';
+import { PostgresProgramaAcademicoRepository } from '../../core/infraestructrura/postgres/repositorio/postgres-programa-academico.repository.js';
+import { registerProgramaAcademicoRoutes } from './routes/programa-academico.routes.js';
+
 // --- Inyección de Dependencias Manual ---
+const programaRepository = new PostgresProgramaAcademicoRepository();
+
+const crearProgramaUseCase = new CrearProgramaAcademicoUseCase(programaRepository);
+const listarProgramasUseCase = new ListarProgramasAcademicosUseCase(programaRepository);
+const obtenerProgramaPorIdUseCase = new ObtenerProgramaAcademicoPorIdUseCase(programaRepository);
+const actualizarProgramaUseCase = new ActualizarProgramaAcademicoUseCase(programaRepository);
+const eliminarProgramaUseCase = new EliminarProgramaAcademicoUseCase(programaRepository);
 
 const periodoRepository = new PostgresPeriodoAcademicoRepository();
 
@@ -20,11 +38,18 @@ const listarPeriodosUseCase = new ObtenerPeriodosUseCase(periodoRepository);
 const obtenerPeriodoPorIdUseCase = new ObtenerPeriodoPorIdUseCase(periodoRepository);
 const actualizarPeriodoUseCase = new ActualizarPeriodoUseCase(periodoRepository);
 const eliminarPeriodoUseCase = new EliminarPeriodoUseCase(periodoRepository);
-
 // --- Servidor Fastify ---
 export const server = fastify({ logger: true });
 
 // --- Registrar Rutas ---
+registerProgramaAcademicoRoutes(
+  server,
+  crearProgramaUseCase,
+  listarProgramasUseCase,
+  obtenerProgramaPorIdUseCase,
+  actualizarProgramaUseCase,
+  eliminarProgramaUseCase
+);
 registerPeriodoAcademicoRoutes(
   server,
   crearPeriodoUseCase,
@@ -36,35 +61,6 @@ registerPeriodoAcademicoRoutes(
 
 
 // --- Iniciar el Servidor ---
-import {
-  CrearProgramaAcademicoUseCase,
-  ListarProgramasAcademicosUseCase,
-  ObtenerProgramaAcademicoPorIdUseCase,
-  ActualizarProgramaAcademicoUseCase,
-  EliminarProgramaAcademicoUseCase
-} from '../../core/aplicaciones/programa-academico/index.js';
-import { PostgresProgramaAcademicoRepository } from '../../core/infraestructrura/postgres/repositorio/postgres-programa-academico.repository.js';
-import { registerProgramaAcademicoRoutes } from './routes/programa-academico.routes.js';
-
-const programaRepository = new PostgresProgramaAcademicoRepository();
-
-const crearProgramaUseCase = new CrearProgramaAcademicoUseCase(programaRepository);
-const listarProgramasUseCase = new ListarProgramasAcademicosUseCase(programaRepository);
-const obtenerProgramaPorIdUseCase = new ObtenerProgramaAcademicoPorIdUseCase(programaRepository);
-const actualizarProgramaUseCase = new ActualizarProgramaAcademicoUseCase(programaRepository);
-const eliminarProgramaUseCase = new EliminarProgramaAcademicoUseCase(programaRepository);
-
-export const server = fastify({ logger: true });
-
-registerProgramaAcademicoRoutes(
-  server,
-  crearProgramaUseCase,
-  listarProgramasUseCase,
-  obtenerProgramaPorIdUseCase,
-  actualizarProgramaUseCase,
-  eliminarProgramaUseCase
-);
-
 export const start = async () => {
   try {
     await server.listen({ port: 3000, host: '0.0.0.0' });
