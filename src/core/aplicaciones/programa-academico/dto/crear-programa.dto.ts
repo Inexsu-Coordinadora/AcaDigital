@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Modalidad, NivelEducativo } from "../../../dominio/entidades/Programa-Academico/NivelYModalidad.js";
+import { Modalidad, NivelEducativo } from "../../../dominio/Programa-Academico/NivelYModalidad.js";
 
 // Schema de validación con Zod
 export const crearProgramaSchema = z.object({
