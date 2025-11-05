@@ -36,11 +36,5 @@
 
     // Recommended Options
     "strict": true,
-
-    
-  },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
   }
 }
