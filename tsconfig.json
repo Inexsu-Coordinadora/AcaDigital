@@ -10,6 +10,7 @@
     "module": "nodenext",
     "target": "esnext",
     "esModuleInterop": true,
+    "moduleResolution": "nodenext",
     
     // For nodejs:
     "lib": ["esnext"],
@@ -37,5 +38,9 @@
     "strict": true,
 
     
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   }
 }

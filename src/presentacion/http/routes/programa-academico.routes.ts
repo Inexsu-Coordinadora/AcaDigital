@@ -76,14 +76,18 @@ export function registerProgramaAcademicoRoutes(
   server.get('/programas-academicos/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      const idLimpio = id?.trim();
       
-      if (!id || id.trim().length === 0) {
+      if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
 
-      const programa = await obtenerProgramaPorIdUseCase.execute(id);
+      const programa = await obtenerProgramaPorIdUseCase.execute(idLimpio);
       if (!programa) {
-        return reply.status(404).send({ message: 'Programa no encontrado' });
+        return reply.status(404).send({ 
+          message: 'Programa no encontrado',
+          idBuscado: idLimpio 
+        });
       }
       
       return reply.send({
@@ -106,8 +110,9 @@ export function registerProgramaAcademicoRoutes(
   server.put('/programas-academicos/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      const idLimpio = id?.trim();
       
-      if (!id || id.trim().length === 0) {
+      if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
 
@@ -124,7 +129,7 @@ export function registerProgramaAcademicoRoutes(
       }
 
       const dto = validacion.data as ActualizarProgramaDto;
-      const programaActualizado = await actualizarProgramaUseCase.execute(id, dto);
+      const programaActualizado = await actualizarProgramaUseCase.execute(idLimpio, dto);
       
       return reply.send({
         id: programaActualizado.getId(),
@@ -149,12 +154,13 @@ export function registerProgramaAcademicoRoutes(
   server.delete('/programas-academicos/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      const idLimpio = id?.trim();
       
-      if (!id || id.trim().length === 0) {
+      if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
 
-      await eliminarProgramaUseCase.execute(id);
+      await eliminarProgramaUseCase.execute(idLimpio);
       return reply.status(204).send(); // No Content
     } catch (error: any) {
       if (error.message.includes('no encontrado')) {
