@@ -9,7 +9,7 @@ import {
   EliminarPeriodoUseCase
 } from '../../core/aplicaciones/periodo-academico/index.js';
 import { PostgresPeriodoAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/periodo-academico.pg.repository.js';
-import { registerPeriodoAcademicoRoutes } from './routes/periodo-academico.routes.js';
+import { registerPeriodoAcademicoRoutes } from './rutas/periodo-academico.rutas.js';
 
 //asignatura
 import {
@@ -20,7 +20,7 @@ import {
   EliminarAsignaturaUseCase
 } from '../../core/aplicaciones/asignatura/index.js'; 
 import { AsignaturaPGRepository } from '../../core/infraestructura/postgres/repositorio/asignatura.pg.repository.js';
-import { asignaturaRoutes } from './routes/asignatura.routes.js';
+import rutasAsignatura from './rutas/asignatura.rutas.js';
 
 //programa academico
 import {
@@ -30,8 +30,8 @@ import {
   ActualizarProgramaAcademicoUseCase,
   EliminarProgramaAcademicoUseCase
 } from '../../core/aplicaciones/programa-academico/index.js';
-import { PostgresProgramaAcademicoRepository } from '../../core/infraestructrura/postgres/repositorio/postgres-programa-academico.repository.js';
-import { registerProgramaAcademicoRoutes } from './routes/programa-academico.routes.js';
+import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/postgres-programa-academico.pg.repository.js';
+import { registerProgramaAcademicoRoutes } from './rutas/programa-academico.rutas.js';
 
 // --- Inyección de Dependencias Manual ---
 const programaRepository = new PostgresProgramaAcademicoRepository();
@@ -56,19 +56,27 @@ const listarPeriodosUseCase = new ObtenerPeriodosUseCase(periodoRepository);
 const obtenerPeriodoPorIdUseCase = new ObtenerPeriodoPorIdUseCase(periodoRepository);
 const actualizarPeriodoUseCase = new ActualizarPeriodoUseCase(periodoRepository);
 const eliminarPeriodoUseCase = new EliminarPeriodoUseCase(periodoRepository);
+
 // --- Servidor Fastify ---
 export const server = fastify({ logger: true });
 
 // --- Registrar Rutas ---
-registerProgramaAcademicoRoutes(
-  server,
-  crearProgramaUseCase,
-  listarProgramasUseCase,
-  obtenerProgramaPorIdUseCase,
-  actualizarProgramaUseCase,
-  eliminarProgramaUseCase
-);
-server.register(asignaturaRoutes, {
+
+// Programa Académico
+server.register(async (instance, options) => {
+    registerProgramaAcademicoRoutes(
+        instance,
+        crearProgramaUseCase,
+        listarProgramasUseCase,
+        obtenerProgramaPorIdUseCase,
+        actualizarProgramaUseCase,
+        eliminarProgramaUseCase
+    );
+}, { prefix: '/api/v1/programas-academicos' });
+
+
+// Asignatura 
+server.register(rutasAsignatura, {
     prefix: '/api/v1/asignaturas',
     dependencies: {
         crearAsignaturaUseCase,
@@ -78,14 +86,19 @@ server.register(asignaturaRoutes, {
         eliminarAsignaturaUseCase,
     }
 });
-registerPeriodoAcademicoRoutes(
-  server,
-  crearPeriodoUseCase,
-  listarPeriodosUseCase,
-  obtenerPeriodoPorIdUseCase,
-  actualizarPeriodoUseCase,
-  eliminarPeriodoUseCase
-);
+
+
+// Periodo Académico
+server.register(async (instance, options) => {
+    registerPeriodoAcademicoRoutes(
+        instance,
+        crearPeriodoUseCase,
+        listarPeriodosUseCase,
+        obtenerPeriodoPorIdUseCase,
+        actualizarPeriodoUseCase,
+        eliminarPeriodoUseCase
+    );
+}, { prefix: '/api/v1/periodos' }); 
 
 
 // --- Iniciar el Servidor ---

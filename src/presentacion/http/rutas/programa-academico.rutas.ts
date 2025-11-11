@@ -1,9 +1,9 @@
 import type { FastifyInstance } from 'fastify';
-import { 
-  CrearProgramaAcademicoUseCase, 
-  ListarProgramasAcademicosUseCase, 
-  ObtenerProgramaAcademicoPorIdUseCase, 
-  ActualizarProgramaAcademicoUseCase, 
+import {
+  CrearProgramaAcademicoUseCase,
+  ListarProgramasAcademicosUseCase,
+  ObtenerProgramaAcademicoPorIdUseCase,
+  ActualizarProgramaAcademicoUseCase,
   EliminarProgramaAcademicoUseCase,
   type CrearProgramaDto,
   type ActualizarProgramaDto,
@@ -19,13 +19,12 @@ export function registerProgramaAcademicoRoutes(
   actualizarProgramaUseCase: ActualizarProgramaAcademicoUseCase,
   eliminarProgramaUseCase: EliminarProgramaAcademicoUseCase
 ) {
-  // Crear programa académico
-  server.post('/programas-academicos', async (request, reply) => {
+  // Crear programa académico (Ruta: /api/v1/programas-academicos)
+  server.post('/', async (request, reply) => {
     try {
-      // Validar el body con Zod
       const validacion = crearProgramaSchema.safeParse(request.body);
       if (!validacion.success) {
-        return reply.status(400).send({ 
+        return reply.status(400).send({
           message: 'Error de validación',
           errors: validacion.error.issues.map((err: any) => ({
             campo: err.path.join('.'),
@@ -52,8 +51,8 @@ export function registerProgramaAcademicoRoutes(
     }
   });
 
-  // Listar todos los programas académicos
-  server.get('/programas-academicos', async (request, reply) => {
+  // Listar todos los programas académicos (Ruta: /api/v1/programas-academicos)
+  server.get('/', async (request, reply) => {
     try {
       const programas = await listarProgramasUseCase.execute();
       return reply.send(programas.map(p => ({
@@ -72,24 +71,24 @@ export function registerProgramaAcademicoRoutes(
     }
   });
 
-  // Obtener programa académico por ID
-  server.get('/programas-academicos/:id', async (request, reply) => {
+  // Obtener programa académico por ID (Ruta: /api/v1/programas-academicos/:id)
+  server.get('/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const idLimpio = id?.trim();
-      
+
       if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
 
       const programa = await obtenerProgramaPorIdUseCase.execute(idLimpio);
       if (!programa) {
-        return reply.status(404).send({ 
+        return reply.status(404).send({
           message: 'Programa no encontrado',
-          idBuscado: idLimpio 
+          idBuscado: idLimpio
         });
       }
-      
+
       return reply.send({
         id: programa.getId(),
         nombre: programa.getNombre(),
@@ -106,12 +105,12 @@ export function registerProgramaAcademicoRoutes(
     }
   });
 
-  // Actualizar programa académico
-  server.put('/programas-academicos/:id', async (request, reply) => {
+  // Actualizar programa académico (Ruta: /api/v1/programas-academicos/:id)
+  server.put('/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const idLimpio = id?.trim();
-      
+
       if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
@@ -119,7 +118,7 @@ export function registerProgramaAcademicoRoutes(
       // Validar el body con Zod
       const validacion = actualizarProgramaSchema.safeParse(request.body);
       if (!validacion.success) {
-        return reply.status(400).send({ 
+        return reply.status(400).send({
           message: 'Error de validación',
           errors: validacion.error.issues.map((err: any) => ({
             campo: err.path.join('.'),
@@ -130,7 +129,7 @@ export function registerProgramaAcademicoRoutes(
 
       const dto = validacion.data as ActualizarProgramaDto;
       const programaActualizado = await actualizarProgramaUseCase.execute(idLimpio, dto);
-      
+
       return reply.send({
         id: programaActualizado.getId(),
         nombre: programaActualizado.getNombre(),
@@ -150,18 +149,18 @@ export function registerProgramaAcademicoRoutes(
     }
   });
 
-  // Eliminar programa académico
-  server.delete('/programas-academicos/:id', async (request, reply) => {
+  // Eliminar programa académico (Ruta: /api/v1/programas-academicos/:id)
+  server.delete('/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const idLimpio = id?.trim();
-      
+
       if (!idLimpio || idLimpio.length === 0) {
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       }
 
       await eliminarProgramaUseCase.execute(idLimpio);
-      return reply.status(204).send(); // No Content
+      return reply.status(204).send(); 
     } catch (error: any) {
       if (error.message.includes('no encontrado')) {
         return reply.status(404).send({ message: error.message });
@@ -170,4 +169,3 @@ export function registerProgramaAcademicoRoutes(
     }
   });
 }
-
