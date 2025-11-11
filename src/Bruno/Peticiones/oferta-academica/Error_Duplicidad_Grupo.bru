@@ -1,0 +1,26 @@
+meta {
+  name: Error_Duplicidad_Grupo
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/api/v1/ofertas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "periodoId": "24e1a1d7-cf33-49e2-85b7-f7195b09c93e",
+    "programaId": "5f062757-e630-4cab-a529-32ffadff9933",
+    "asignaturaId": 2,
+    "grupo": "G001",
+    "cupoDisponible": 50
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

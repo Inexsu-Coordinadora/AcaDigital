@@ -1,0 +1,26 @@
+meta {
+  name: Crear_Oferta_Exito
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/v1/ofertas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "periodoId": "24e1a1d7-cf33-49e2-85b7-f7195b09c93e",
+    "programaId": "5f062757-e630-4cab-a529-32ffadff9933",
+    "asignaturaId": 3,
+    "grupo": "G001",
+    "cupoDisponible": 25
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
