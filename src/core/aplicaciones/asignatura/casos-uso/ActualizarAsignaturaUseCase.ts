@@ -7,13 +7,13 @@ export class ActualizarAsignaturaUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) {}
 
     async execute(dto: ActualizarAsignaturaDTO): Promise<IAsignatura> {
-        const asignaturaExistente = await this.repositorio.findById(dto.id);
+        const asignaturaExistente = await this.repositorio.obtenerPorId(dto.id);
         if (!asignaturaExistente) {
             throw new Error(`404: Asignatura con ID ${dto.id} no encontrada.`);
         }
 
         if (dto.nombre !== asignaturaExistente.getNombre()) {
-            const conMismoNombre = await this.repositorio.findByNombre(dto.nombre);
+            const conMismoNombre = await this.repositorio.obtenerPorNombre(dto.nombre);
             
             if (conMismoNombre && conMismoNombre.getId() !== dto.id) {
                 throw new Error(`409: La asignatura con nombre '${dto.nombre}' ya existe.`);
@@ -26,6 +26,6 @@ export class ActualizarAsignaturaUseCase {
             dto.tipo as TipoAsignatura
         );
 
-        return this.repositorio.save(asignaturaExistente);
+        return this.repositorio.guardar(asignaturaExistente);
     }
 }
