@@ -1,5 +1,5 @@
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
-import type { ActualizarAsignaturaDTO } from '../dtos/ActualizarAsignaturaDTO.js';
+import type { ActualizarAsignaturaDTO } from '../Dtos/ActualizarAsignaturaDTO.js';
 import { TipoAsignatura } from '../../../dominio/entidades/asignatura/Asignatura.js';
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 

@@ -4,12 +4,12 @@
   "description": "",
   "type": "module",
   "main": "index.js",
-"scripts": {
-"dev": "tsx watch --env-file .env src/presentacion/http/server.ts", 
-  "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
-  "test": "jest",
-  "start": "node dist/server.js"
-},
+  "scripts": {
+    "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
+    "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
+    "test": "jest",
+    "start": "node dist/server.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OscarCalle0/AcaDigital.git"
