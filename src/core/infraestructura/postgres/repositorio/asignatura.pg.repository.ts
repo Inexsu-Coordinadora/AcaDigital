@@ -15,7 +15,7 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
         );
     }
 
-    async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
+    async save(asignatura: IAsignatura): Promise<IAsignatura> {
         if (asignatura.getId()) {
             const sql = `UPDATE asignaturas SET nombre = $1, carga_horaria = $2, tipo = $3, fecha_actualizacion = NOW() WHERE id = $4 RETURNING *;`;
             const valores = [asignatura.getNombre(), asignatura.getCargaHoraria(), asignatura.getTipo(), asignatura.getId()];
@@ -29,25 +29,25 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
         }
     }
 
-    async obtenerPorId(id: number): Promise<IAsignatura | null> {
+    async findById(id: number): Promise<IAsignatura | null> {
         const sql = 'SELECT * FROM asignaturas WHERE id = $1;';
         const resultado = await pool.query(sql, [id]); 
         if (resultado.rows.length === 0) return null;
         return this.mapearFilaAAsignatura(resultado.rows[0]);
     }
 
-    async obtenerTodos(): Promise<IAsignatura[]> {
+    async findAll(): Promise<IAsignatura[]> {
         const sql = 'SELECT * FROM asignaturas ORDER BY nombre;';
         const resultado = await pool.query(sql, []); 
         return resultado.rows.map(this.mapearFilaAAsignatura);
     }
 
-    async eliminar(id: number): Promise<void> {
+    async delete(id: number): Promise<void> {
         const sql = 'DELETE FROM asignaturas WHERE id = $1;';
         await pool.query(sql, [id]); 
     }
 
-    async obtenerPorNombre(nombre: string): Promise<IAsignatura | null> {
+    async findByNombre(nombre: string): Promise<IAsignatura | null> {
         const sql = 'SELECT * FROM asignaturas WHERE nombre ILIKE $1;';
         const resultado = await pool.query(sql, [nombre]); 
         if (resultado.rows.length === 0) return null;
