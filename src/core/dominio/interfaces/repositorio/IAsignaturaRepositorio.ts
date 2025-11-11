@@ -1,9 +1,9 @@
 import type { IAsignatura } from '../IAsignatura.js';
 
 export interface IAsignaturaRepositorio {
-  save(asignatura: IAsignatura): Promise<IAsignatura>;
-  findById(id: number): Promise<IAsignatura | null>;
-  findAll(): Promise<IAsignatura[]>;
-  delete(id: number): Promise<void>;
-  findByNombre(nombre: string): Promise<IAsignatura | null>;
-}
+  guardar(asignatura: IAsignatura): Promise<IAsignatura>;
+  obtenerPorId(id: number): Promise<IAsignatura | null>;
+  obtenerTodos(): Promise<IAsignatura[]>;
+  eliminar(id: number): Promise<void>;
+  obtenerPorNombre(nombre: string): Promise<IAsignatura | null>;
+};

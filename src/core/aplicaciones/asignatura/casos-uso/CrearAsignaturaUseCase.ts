@@ -7,7 +7,7 @@ export class CrearAsignaturaUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) {}
 
     async execute(dto: CrearAsignaturaDTO): Promise<IAsignatura> {
-        const existe = await this.repositorio.findByNombre(dto.nombre);
+        const existe = await this.repositorio.obtenerPorNombre(dto.nombre);
         if (existe) {
             throw new Error(`409: La asignatura con nombre '${dto.nombre}' ya existe.`); 
         }
@@ -18,6 +18,6 @@ export class CrearAsignaturaUseCase {
             dto.tipo as TipoAsignatura 
         );
 
-        return this.repositorio.save(nuevaAsignatura);
+        return this.repositorio.guardar(nuevaAsignatura);
     }
 }
