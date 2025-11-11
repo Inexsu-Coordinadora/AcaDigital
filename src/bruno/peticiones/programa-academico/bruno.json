@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "programa-academico",
+  "name": "AcaDigital API",
   "type": "collection",
   "ignore": [
     "node_modules",
