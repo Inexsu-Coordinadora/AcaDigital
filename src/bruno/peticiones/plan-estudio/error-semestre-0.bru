@@ -1,0 +1,24 @@
+meta {
+  name: error-semestre>0
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://127.0.0.1:3000/api/v1/programas-academicos/493c7944-5664-4691-b753-d6b83b08b952/plan-estudio
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "asignaturaId": 3,
+    "semestreNivel": 0,
+    "creditosCarga": 3.0
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

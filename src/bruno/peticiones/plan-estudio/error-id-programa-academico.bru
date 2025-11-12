@@ -1,0 +1,24 @@
+meta {
+  name: error-id-programa-academico
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://127.0.0.1:3000/api/v1/programas-academicos/13331/plan-estudio
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "asignaturaId": 3,
+    "semestreNivel": 1,
+    "creditosCarga": 2
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
