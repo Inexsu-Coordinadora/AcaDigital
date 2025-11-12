@@ -1,0 +1,26 @@
+meta {
+  name: Error_Asignatura_Inexistente
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/api/v1/ofertas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "periodoId": "9c03c45c-71b8-4362-9f6c-6c4f2a49e069",
+    "programaId": "8fac7a3b-a04e-499a-be1c-3c6ea54b60bc",
+    "asignaturaId": 99999,
+    "grupo": "G003",
+    "cupoDisponible": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
