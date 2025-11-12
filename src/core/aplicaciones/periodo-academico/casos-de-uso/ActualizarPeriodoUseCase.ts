@@ -21,13 +21,42 @@ export class ActualizarPeriodoUseCase {
             periodoEntidad.nombre = input.nombre;
         };
 
-        if (input.fechaInicio) periodoEntidad.fechaInicio = new Date(input.fechaInicio);
-        if (input.fechaFin) periodoEntidad.fechaFin = new Date(input.fechaFin);
+        const nuevaFechaInicio = input.fechaInicio ? new Date(input.fechaInicio) : periodoEntidad.fechaInicio;
+        const nuevaFechaFin = input.fechaFin ? new Date(input.fechaFin) : periodoEntidad.fechaFin;
+
+        if (nuevaFechaFin <= nuevaFechaInicio) {
+            throw new Error('La fecha de fin debe ser posterior a la fecha de inicio.');
+        }
+
+        periodoEntidad.fechaInicio = nuevaFechaInicio;
+        periodoEntidad.fechaFin = nuevaFechaFin;
+
+        if (input.estado && input.estado !== periodoEntidad.estado) {
+            if (input.estado === 'activo') {
+                periodoEntidad.activar();
+            } else if (input.estado === 'cerrado') {
+                periodoEntidad.cerrar();
+            } else if (input.estado === 'inactivo') {
+                throw new Error('Transición de estado inválida: no se puede pasar a "inactivo" directamente.');
+            }
+        }
+
+        if (periodoEntidad.estado === 'activo') {
+            const periodosTraslapados = await this.repo.obtenerPeriodosActivosTraslapados(
+                periodoEntidad.fechaInicio,
+                periodoEntidad.fechaFin,
+                periodoEntidad.id
+            );
+            if (periodosTraslapados && periodosTraslapados.length > 0) {
+                throw new Error('El período se solapa con otro período activo existente.');
+            }
+        }
+
+        periodoEntidad.updatedAt = new Date(); 
+
         
-        periodoEntidad.actualizarEstado();
-        periodoEntidad.updatedAt = new Date();
-        
-        const cambios: Partial<IPeriodoAcademico> = {
+
+                const cambios: Partial<IPeriodoAcademico> = {
             nombre: periodoEntidad.nombre,
             fechaInicio: periodoEntidad.fechaInicio,
             fechaFin: periodoEntidad.fechaFin,

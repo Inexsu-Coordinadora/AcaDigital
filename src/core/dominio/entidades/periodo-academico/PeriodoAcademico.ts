@@ -3,6 +3,7 @@ import type { IPeriodoAcademico } from "../../interfaces/IPeriodoAcademico.js";
 import { randomUUID } from 'crypto';
 
 export class PeriodoAcademico implements IPeriodoAcademico {
+    
     public readonly id: string;
     public nombre: string;
     public fechaInicio: Date;
