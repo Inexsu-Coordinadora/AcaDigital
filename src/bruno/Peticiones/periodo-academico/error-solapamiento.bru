@@ -1,5 +1,5 @@
 meta {
-  name: Error - Fechas Inválidas
+  name: error-solapamiento
   type: http
   seq: 1
 }
@@ -12,7 +12,8 @@ put {
 
 body:json {
   {
-         "fechaInicio": "2024-01-01",
-         "fechaFin": "2025-12-31"
+    "estado": "activo",
+    "fechaInicio": "2024-04-01",
+    "fechaFin": "2024-10-01"
   }
 }

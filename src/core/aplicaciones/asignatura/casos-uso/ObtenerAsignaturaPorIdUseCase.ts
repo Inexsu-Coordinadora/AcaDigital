@@ -4,7 +4,7 @@ import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 export class ObtenerAsignaturaPorIdUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) {}
 
-    async findById(id: number): Promise<IAsignatura | null> {
-        return this.repositorio.findById(id);
+    async obtenerPorId(id: number): Promise<IAsignatura | null> {
+        return this.repositorio.obtenerPorId(id);
     }
 }

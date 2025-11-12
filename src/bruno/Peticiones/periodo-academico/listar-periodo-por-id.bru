@@ -1,11 +1,11 @@
 meta {
-  name: GetPeriodos
+  name: listar-periodo-por-id
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: http://localhost:3000/api/v1/periodos
+  url: http://localhost:3000/api/v1/periodos/{{id}}
   body: none
   auth: inherit
 }

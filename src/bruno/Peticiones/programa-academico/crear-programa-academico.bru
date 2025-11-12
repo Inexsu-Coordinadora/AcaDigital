@@ -1,11 +1,11 @@
 meta {
-  name: Crear Programa Academico
+  name: crear-programa-academico
   type: http
   seq: 1
 }
 
 post {
-  url: http://localhost:3000/programas-academicos
+  url: http://localhost:3000/api/v1/programas-academicos
   body: json
   auth: none
 }
@@ -41,4 +41,3 @@ docs {
   ## Respuesta exitosa (201):
   Retorna el programa académico creado con su ID generado.
 }
-

@@ -1,11 +1,11 @@
 meta {
-  name: Listar Programas Academicos
+  name: listar-programas-academicos
   type: http
   seq: 2
 }
 
 get {
-  url: http://localhost:3000/programas-academicos
+  url: http://localhost:3000/api/v1/programas-academicos
   body: none
   auth: none
 }
@@ -22,4 +22,3 @@ docs {
   ## Respuesta exitosa (200):
   Retorna un array con todos los programas académicos.
 }
-
