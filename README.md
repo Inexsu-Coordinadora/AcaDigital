@@ -3,6 +3,10 @@
 
 **Sistema de Gestión Académica** **Entrega 2** — Servicios de Planificación Académica
 
+![Fastify](https://img.shields.io/badge/Fastify-000000?style=flat&logo=fastify&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+
 -----
 
 ## Objetivos del Proyecto
@@ -48,10 +52,9 @@ npm run migrate
 
   - `migrations/001-create-programas.sql`
   - `migrations/002-create-asignaturas.sql`
-  - `migrations/003-create-periodos.sql`
+  - **`migrations/003-create-periodos.sql`** (Servicio 2)
   - **`migrations/004-create-plan-estudio.sql`** (Servicio 1)
-  - **`migrations/005-alter-periodos-add-estado.sql`** (Servicio 2)
-  - **`migrations/006-create-oferta-academica.sql`** (Servicio 3)
+  - **`migrations/005-create-oferta-academica.sql`** (Servicio 3)
 
 **Índices y constraints** para unicidad, coherencia de datos (`CHECK`) e integridad referencial (`ON DELETE CASCADE`).
 
@@ -139,13 +142,14 @@ bruno/
     │   └── error-periodo-invalido.bru
     ├── periodo-academico/
     │   ├── bruno.json
-    │   ├── delete-periodo.bru
-    │   ├── get-periodo.bru
-    │   ├── post-periodo.bru
-    │   ├── put-periodo.bru
-    │   ├── put-error-solapamiento.bru
-    │   ├── put-error-transicion.bru
-    │   └── put-error.bru
+    │   ├── crear-periodo.bru
+    │   ├── actualizar-periodo.bru
+    │   ├── eliminar-periodo.bru
+    │   ├── listar-periodo-por-id.bru
+    │   ├── listar-periodos.bru
+    │   ├── error-fecha-invalida.bru
+    │   ├── error-solapamiento.bru
+    │   └── error-transicion.bru
     ├── plan-estudio/
     │   ├── bruno.json
     │   ├── crear-plan.bru
@@ -155,11 +159,11 @@ bruno/
     │   └── get-programa-academico.bru
     └── programa-academico/
         ├── bruno.json
-        ├── Crear Programa Academico.bru
-        ├── Eliminar Programa Academico.bru
-        ├── Get.bru
-        ├── Listar Programas Academicos.bru
-        └── Put.bru
+        ├── crear-programa-academico.bru
+        ├── eliminar programa academico.bru
+        ├── listar-por-id.bru
+        ├── listar-programas-academicoso.bru
+        └── actualizar-programa-academico.bru
 
 ```
 
@@ -167,7 +171,7 @@ bruno/
 
 ## Acceso al Azure DevOps
 
-Este proyecto está gestionado en Azure DevOps. Si eres colaborador externo y necesitas acceso para ver tareas, tableros, repositorios o pipelines, sigue estos pasos:
+Este proyecto está gestionado en Azure DevOps. Si eres colaborador externo y necesitas acceso para ver tareas, tableros o repositorios, sigue estos pasos:
 
 ### Solicitud de acceso
 
