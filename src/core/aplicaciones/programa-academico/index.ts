@@ -6,13 +6,13 @@ export { ActualizarProgramaAcademicoUseCase } from './casos-uso/actualizar-progr
 export { EliminarProgramaAcademicoUseCase } from './casos-uso/eliminar-programa-academico.use-case.js';
 
 // DTOs y Schemas
-export { 
-  crearProgramaSchema, 
-  type CrearProgramaDto 
-} from './Dtos/crear-programa.dto.js';
+export {
+  crearProgramaSchema,
+  type CrearProgramaDto
+} from './dtos/crear-programa.dto.js';
 
-export { 
-  actualizarProgramaSchema, 
-  type ActualizarProgramaDto 
-} from './Dtos/actualizar-programa.dto.js';
+export {
+  actualizarProgramaSchema,
+  type ActualizarProgramaDto
+} from './dtos/actualizar-programa.dto.js';
 

@@ -1,7 +1,7 @@
 import { PeriodoAcademico } from '../../../dominio/entidades/periodo-academico/PeriodoAcademico.js';
-import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcademico.js'; 
+import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcademico.js';
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
-import type { CrearPeriodoDTO} from '../Dtos/CrearPeriodoDTO.js';
+import type { CrearPeriodoDTO } from '../dtos/CrearPeriodoDTO.js';
 
 export class CrearPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };
@@ -15,7 +15,7 @@ export class CrearPeriodoUseCase {
             throw new Error('fechaFin debe ser posterior a fechaInicio');
         };
 
-        const existe = await this.repo.obtenerPorNombre(nombre); 
+        const existe = await this.repo.obtenerPorNombre(nombre);
         if (existe) {
             throw new Error('Ya existe un periodo con ese nombre');
         };
