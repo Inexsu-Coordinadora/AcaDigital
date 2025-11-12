@@ -83,6 +83,23 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
         await pool.query('DELETE FROM periodos WHERE id = $1', [id]);
     };
 
+    async obtenerPeriodosActivosTraslapados(fechaInicio: Date, fechaFin: Date, idActual?: string): Promise<IPeriodoAcademico[]> {
+        let query = `
+            SELECT * FROM periodos
+            WHERE estado = 'activo'
+              AND (fecha_inicio <= $2 AND fecha_fin >= $1)
+        `;
+        const values: any[] = [fechaInicio, fechaFin];
+
+        if (idActual) {
+            query += ' AND id != $3';
+            values.push(idActual);
+        }
+
+        const { rows } = await pool.query(query, values);
+        return rows.map(row => this.mapear(row));
+    }
+
     private mapear(row: any): IPeriodoAcademico {
         return {
             id: row.id,
