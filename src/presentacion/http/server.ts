@@ -148,7 +148,7 @@ server.register(rutasAsignatura, {
         obtenerAsignaturaPorIdUseCase,
         actualizarAsignaturaUseCase,
         eliminarAsignaturaUseCase,
-    };
+    }
 });
 
 // Periodo Academico
