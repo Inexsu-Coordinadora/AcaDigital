@@ -1,172 +1,256 @@
-# AcaDigital  
-**Sistema de Gestión Académica**  
-**Entrega 1** — CRUD de tres entidades principales  
+
+# AcaDigital
+
+**Sistema de Gestión Académica** **Entrega 2** — Servicios de Planificación Académica
 
 ![Fastify](https://img.shields.io/badge/Fastify-000000?style=flat&logo=fastify&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
 
----
+-----
 
-## Objetivo de la entrega
-Construir la base del sistema implementando las operaciones **CRUD completas** para tres entidades principales relacionadas con la gestión académica:
+## Objetivos del Proyecto
 
-- **Programa académico**: información general del programa, nivel educativo, duración y modalidad.  
-- **Asignatura**: información sobre las materias impartidas, su carga horaria y tipo (teórica, práctica o mixta).  
-- **Período académico**: información del ciclo (nombre, fechas de inicio y fin, estado actual).
+### Entrega 1 — CRUD Base (Completada)
 
----
+Construir la base del sistema implementando las operaciones **CRUD completas** para tres entidades principales:
+
+  - Programa académico
+  - Asignatura
+  - Período académico
+
+### Entrega 2 — Servicios de Planificación (Implementada)
+
+Ampliar el sistema con validaciones de negocio complejas y tres servicios transaccionales centrados en la planificación académica:
+
+1.  **Definición de plan de estudio:** Vincular asignaturas a un programa académico (Relación N:M).
+2.  **Gestión de períodos:** Implementar la lógica de transición de estados (`activo`, `cerrado`) y validación de no solapamiento de fechas.
+3.  **Oferta de asignaturas por período:** Permitir la creación de grupos/secciones con cupos para un período activo.
+
+-----
 
 ## Instalacion
+
 ```bash
-git clone https://github.com/tu-usuario/academia-pro.git
-cd academia-pro
+git clone https://github.com/Inexsu-Coordinadora/AcaDigital
+cd AcaDigital
 npm install
 cp .env.example .env
 npm run migrate
 npm run dev
 ```
-Servidor: http://localhost:3000  
-Bruno: `Bruno/Peticiones/` (con carpetas para cada entidad: `Programa-Academico`, `Asignatura`, `Periodo-Academico`).
 
----
+Servidor: http://localhost:3000  
+
+-----
 
 ## Migraciones
+
 ```bash
 npm run migrate
 ```
-- `migrations/001-create-programas.sql`
-- `migrations/002-create-asignaturas.sql`
-- `migrations/003-create-periodos.sql`
-**Índices y constraints** para unicidad y rendimiento.
 
----
+  - `migrations/001-create-programas.sql`
+  - `migrations/002-create-asignaturas.sql`
+  - **`migrations/003-create-periodos.sql`** (Servicio 2)
+  - **`migrations/004-create-plan-estudio.sql`** (Servicio 1)
+  - **`migrations/005-create-oferta-academica.sql`** (Servicio 3)
 
-## Endpoints (Fastify JSON Schema)
-| Entidad        | Método | Ruta                  | Ejemplo de body |
-|----------------|--------|-----------------------|-----------------|
-| **Programa**   | POST   | `/programas`          | `{ "nombre": "Ing. Sistemas", "nivel": "profesional", "duracion": 10, "modalidad": "presencial" }` |
-|                | GET    | `/programas`          | — |
-|                | GET    | `/programas/:id`      | — |
-|                | PUT    | `/programas/:id`      | `{ "nombre": "Ing. Actualizada" }` |
-|                | DELETE | `/programas/:id`      | — |
-| **Asignatura** | POST   | `/asignaturas`        | `{ "nombre": "Cálculo I", "codigo": "CAL-101", "cargaHoraria": 64, "tipo": "teórica", "programaId": "uuid" }` |
-|                | GET    | `/asignaturas`        | — |
-|                | GET    | `/asignaturas/:id`    | — |
-|                | PUT    | `/asignaturas/:id`    | `{ "nombre": "Asignatura Actualizada" }` |
-|                | DELETE | `/asignaturas/:id`    | — |
-| **Período**    | POST   | `/periodos`           | `{ "nombre": "2025-I", "fechaInicio": "2025-01-15", "fechaFin": "2025-06-30" }` |
-|                | GET    | `/periodos`           | — |
-|                | GET    | `/periodos/:id`       | — |
-|                | PUT    | `/periodos/:id`       | `{ "fechaFin": "2025-07-30" }` |
-|                | DELETE | `/periodos/:id`       | — |
+**Índices y constraints** para unicidad, coherencia de datos (`CHECK`) e integridad referencial (`ON DELETE CASCADE`).
 
----
+-----
 
-## Ejemplo de validaciones
-- Campos **obligatorios**  
-- `nombre` único y patrón `^[A-Z0-9-]+$`  
-- Fechas ISO  
-- `fechaFin > fechaInicio` (validado en controlador)  
-- Respuestas estructuradas: `400`, `409`, `404`
+## Endpoints (API)
 
-**Ejemplo de error:**
+### CRUD Base (Entrega 1)
+
+| Entidad | Método | Ruta (Prefijo: `/api/v1`) | Ejemplo de body |
+|---|---|---|---|
+| **Programa** | POST | `/programas-academicos` | `{ "nombre": "Ing. Sistemas", "nivel": "Pregrado", "duracionValor": 10, "duracionUnidad": "semestres", ... }` |
+| | GET | `/programas-academicos` | — |
+| | GET | `/programas-academicos/:id` | — |
+| | PUT | `/programas-academicos/:id` | `{ "nombre": "Ing. Actualizada", "descripcion": "..." }` |
+| | DELETE | `/programas-academicos/:id` | — |
+| **Asignatura** | POST | `/asignaturas` | `{ "nombre": "Cálculo I", "codigo": "CAL-101", "cargaHoraria": 64, "tipo": "teorica" }` |
+| | GET | `/asignaturas` | — |
+| | GET | `/asignaturas/:id` | — |
+| | PUT | `/asignaturas/:id` | `{ "nombre": "Asignatura Actualizada", "cargaHoraria": 80 }` |
+| | DELETE | `/asignaturas/:id` | — |
+| **Período** | POST | `/periodos` | `{ "nombre": "2025-I", "fechaInicio": "2025-01-15", "fechaFin": "2025-06-30" }` |
+| | GET | `/periodos` | — |
+| | GET | `/periodos/:id` | — |
+| | DELETE | `/periodos/:id` | — |
+
+### Servicios de Planificación (Entrega 2)
+
+| Servicio | Método | Ruta (Prefijo: `/api/v1`) | Ejemplo de body |
+|---|---|---|---|
+| **1. Plan de Estudio** | POST | `/programas-academicos/:programaId/plan-estudio` | `{ "asignaturaId": 1, "semestreNivel": 1, "creditosCarga": 3 }` |
+| **2. Gestión Períodos**| PUT | `/periodos/:id` | `{ "fechaFin": "2025-07-30", "estado": "activo" }` |
+| **3. Oferta Académica**| POST | `/ofertas` | `{ "periodoId": "uuid", "programaId": "uuid", "asignaturaId": 1, "grupo": "A1", "cupo": 30 }` |
+
+-----
+
+## Validaciones
+
+El sistema implementa validaciones en la Capa de Presentación (Schema Fastify) y en la Capa de Aplicación (Casos de Uso):
+
+**Validaciones de Forma (Schema):**
+
+  - Campos **obligatorios** (`required`).
+  - Tipos de datos (`integer`, `string`, `number`).
+  - Coherencia de valores (`minimum: 1` para semestres, `minimum: 0.01` para créditos).
+
+**Validaciones de Negocio (Caso de Uso):**
+
+  - **Unicidad simple:** (ej. `nombre` de asignatura, `nombre` de período).
+  - **Existencia (404):** Verifica que `programaId`, `asignaturaId`, etc., existan antes de vincular.
+  - **No Duplicidad (409):** Verifica que no se dupliquen vínculos (ej. Asignatura ya vinculada a un programa, o Grupo ya ofertado).
+  - **Reglas de Estado:** Verifica que un período esté 'activo' para permitir la oferta de asignaturas (Servicio 3).
+  - **Coherencia de Fechas:** `fechaFin > fechaInicio` y validación de no solapamiento de períodos activos (Servicio 2).
+
+**Ejemplo de error (Formato Uniforme):**
+
 ```json
 {
-  "error": "fechaFin debe ser posterior a fechaInicio",
-  "field": "fechaFin"
+  "message": "No puede activar un periodo que se solapa con otro periodo activo."
 }
 ```
 
----
+-----
 
 ## Bruno Collection
+
+La colección de Bruno incluye peticiones para todos los *endpoints* CRUD y los nuevos servicios, incluyendo casos de éxito y error (400, 404, 409).
+
 ```
-Bruno/
+bruno/
 └── Peticiones/
-    ├── Programa-Academico/
-    │   ├── CreateProgramaAcademico.bruno
-    │   ├── DeleteProgramaAcademico.bruno
-    │   ├── GetProgramaAcademico.bruno
-    │   ├── GetProgramaAcademicoPorId.bruno
-    │   ├── Programa-Academico.json
-    │   ├── PutProgramaAcademico.bruno
-    ├── Asignatura/
-    │   ├── asignatura.bru
+    ├── asignatura/
     │   ├── bruno.json
-    │   ├── de_asignatura.bru
-    │   ├── Listar Todos.bru
-    │   ├── Obtener por ID.bru
-    │   ├── up_asignatura.bru
-    └── Periodo-Academico/
-        ├── CreatePeriodoAcademico.bruno
-        ├── DeletePeriodoAcademico.bruno
-        ├── GetPeriodoAcademico.bruno
-        ├── GetPeriodoPorId.bruno
-        ├── Periodo-Academico.json
-        ├── PostPeriodoAcademico.bruno
-        ├── PutPeriodoAcademico.bruno
+    │   ├── actualizar-asignatura.bru
+    │   ├── crear-asignatura.bru
+    │   ├── eliminar-asignatura.bru
+    │   ├── listar-por-id.bru
+    │   └── listar-todos.bru
+    ├── oferta-academica/
+    │   ├── bruno.json
+    │   ├── crear-oferta-exito.bru
+    │   ├── crear-oferta-inexistente.bru
+    │   ├── error-duplicidad.bru
+    │   ├── error-duplicidad-grupo.bru
+    │   └── error-periodo-invalido.bru
+    ├── periodo-academico/
+    │   ├── bruno.json
+    │   ├── crear-periodo.bru
+    │   ├── actualizar-periodo.bru
+    │   ├── eliminar-periodo.bru
+    │   ├── listar-periodo-por-id.bru
+    │   ├── listar-periodos.bru
+    │   ├── error-fecha-invalida.bru
+    │   ├── error-solapamiento.bru
+    │   └── error-transicion.bru
+    ├── plan-estudio/
+    │   ├── bruno.json
+    │   ├── crear-plan.bru
+    │   ├── error-asignatura-no-encontrada.bru
+    │   ├── error-duplicidad.bru
+    │   ├── error-periodo.bru
+    │   └── get-programa-academico.bru
+    └── programa-academico/
+        ├── bruno.json
+        ├── crear-programa-academico.bru
+        ├── eliminar programa academico.bru
+        ├── listar-por-id.bru
+        ├── listar-programas-academicoso.bru
+        └── actualizar-programa-academico.bru
 
 ```
-- 19 peticiones
-- Incluye errores 400/409
-- Carpetas por entidad para organización clara.
 
----
-##  Acceso al Azure DevOps
+-----
 
-Este proyecto está gestionado en Azure DevOps. Si eres colaborador externo y necesitas acceso para ver tareas, tableros, repositorios o pipelines, sigue estos pasos:
+## Acceso al Azure DevOps
 
-###  Solicitud de acceso
+Este proyecto está gestionado en Azure DevOps. Si eres colaborador externo y necesitas acceso para ver tareas, tableros o repositorios, sigue estos pasos:
 
-1. Envía un correo a **apolo4748@gmail.com** con el asunto: `Solicitud de acceso a Azure DevOps - AcademiaPro`.
-2. Incluye en el mensaje:
-   - Tu nombre completo
-   - Correo asociado a tu cuenta Microsoft o GitHub
-   - Rol que desempeñarás (ej. revisor, desarrollador, stakeholder)
-3. Una vez aprobado, recibirás una invitación por correo para unirte al proyecto.
+### Solicitud de acceso
+
+1.  Envía un correo a **apolo4748@gmail.com** con el asunto: `Solicitud de acceso a Azure DevOps - AcaDigital`.
+2.  Incluye en el mensaje:
+      - Tu nombre completo
+      - Correo asociado a tu cuenta Microsoft o GitHub
+      - Rol que desempeñarás (ej. revisor, desarrollador, stakeholder)
+3.  Una vez aprobado, recibirás una invitación por correo para unirte a la organización.
 
 > El acceso está limitado a cuentas con correo válido y puede requerir una cuenta Microsoft gratuita.
 
----
+-----
 
-### 📎 Enlace al proyecto (requiere acceso)
+### Enlace al proyecto (requiere acceso)
 
-[https://dev.azure.com/Deilons/AcaDigital - inesxu]([https://dev.azure.com/Deilons/AcaDigital](https://dev.azure.com/Deilons/AcaDigital%20-%20Inesxu))
+[https://dev.azure.com/Deilons/AcaDigital - inesxu](https://dev.azure.com/Deilons/AcaDigital%20-%20Inesxu)
 
----
+-----
 
 ## Flujo de ramas
+
+El flujo de trabajo se basa en ramas de *features* (para E1 y E2) que se integran en `develop` antes de pasar a `main`.
+
 ```mermaid
 gitGraph
-  commit id: "main"
-  branch develop
-  checkout develop
-  commit id: "init"
-  branch feature-244/CRUD-asignaturas
-  checkout feature-244/CRUD-asignaturas
-  commit id: "CRUD Asignaturas"
-  checkout develop
-  merge feature-244/CRUD-asignaturas
-  branch feature-245/CRUD-Programa-academico
-  checkout feature-245/CRUD-Programa-academico
-  commit id: "CRUD Programa"
-  checkout develop
-  merge feature-245/CRUD-Programa-academico
-  branch feature-246/CRUD-periodo-academico
-  checkout feature-246/CRUD-periodo-academico
-  commit id: "CRUD Período"
-  checkout develop
-  merge feature-246/CRUD-periodo-academico
-  checkout main
-  merge develop
-```
-- 3 branches principales: `feature-244/CRUD-asignaturas`, `feature-245/CRUD-Programa-academico`, `feature-246/CRUD-periodo-academico`.  
-- Todas van a `develop` y de `develop` a `main`.  
+    commit id: "main"
+    branch develop
+    checkout develop
+    commit id: "Init E1"
+    
+    branch feature-244/CRUD-asignaturas
+    checkout feature-244/CRUD-asignaturas
+    commit id: "CRUD Asignaturas"
+    checkout develop
+    merge feature-244/CRUD-asignaturas
+    
+    branch feature-245/CRUD-Programa-academico
+    checkout feature-245/CRUD-Programa-academico
+    commit id: "CRUD Programa"
+    checkout develop
+    merge feature-245/CRUD-Programa-academico
+    
+    branch feature-246/CRUD-periodo-academico
+    checkout feature-246/CRUD-periodo-academico
+    commit id: "CRUD Período"
+    checkout develop
+    merge feature-246/CRUD-periodo-academico
+    commit id: "E1 Merge"
+    
+    branch feature/plan-estudio-programa
+    checkout feature/plan-estudio-programa
+    commit id: "Servicio 1"
+    checkout develop
+    merge feature/plan-estudio-programa
+    
+    branch feature/periodos-academicos
+    checkout feature/periodos-academicos
+    commit id: "Servicio 2"
+    checkout develop
+    merge feature/periodos-academicos
+    
+    branch feature/oferta-asignaturas-periodo
+    checkout feature/oferta-asignaturas-periodo
+    commit id: "Servicio 3"
+    checkout develop
+    merge feature/oferta-asignaturas-periodo
+    commit id: "E2 Merge"
 
----
+    checkout main
+    merge develop
+```
+
+  - Ramas de *feature* (ej. `feature/plan-estudio-programa`) se crean desde `develop`.
+  - El trabajo se integra en `develop`.
+  - `develop` se fusiona con `main` para las entregas estables.
+
+-----
 
 ## Licencia
-MIT © AcademiaPro 2025
 
---- 
+MIT © AcaDigital 2025
