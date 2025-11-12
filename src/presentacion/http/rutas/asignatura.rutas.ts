@@ -93,7 +93,7 @@ export default function rutasAsignatura(
         prefijo + ':id',
         { schema: { params: EsquemaParametrosId, response: { 200: EsquemaRespuestaAsignatura, 404: { type: 'object' } }, tags: ['Asignaturas'] } },
         async (peticion: ObtenerRequest, respuesta: FastifyReply) => {
-            const asignatura = await obtenerAsignaturaPorIdUseCase.findById(peticion.params.id);
+            const asignatura = await obtenerAsignaturaPorIdUseCase.obtenerPorId(peticion.params.id);
             if (!asignatura) return respuesta.code(404).send({ error: `Asignatura con ID ${peticion.params.id} no encontrada.` });
             return respuesta.send(asignatura);
         }

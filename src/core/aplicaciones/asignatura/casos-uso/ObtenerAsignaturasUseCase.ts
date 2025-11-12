@@ -5,6 +5,6 @@ export class ObtenerAsignaturasUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) {}
     
     async findAll(): Promise<IAsignatura[]> {
-        return this.repositorio.findAll();
+        return this.repositorio.obtenerTodos();
     }
 }
