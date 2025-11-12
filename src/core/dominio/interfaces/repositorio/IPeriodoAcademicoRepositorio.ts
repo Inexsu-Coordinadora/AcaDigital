@@ -7,4 +7,5 @@ export interface IPeriodoRepositorio {
     obtenerTodos(filtro?: { estado?: string }): Promise<IPeriodoAcademico[]>;
     actualizar(id: string, data: Partial<IPeriodoAcademico>): Promise<IPeriodoAcademico>;
     eliminar(id: string): Promise<void>;
+    obtenerPeriodosActivosTraslapados(fechaInicio: Date, fechaFin: Date, idActual?: string): Promise<IPeriodoAcademico[]>;
 };
