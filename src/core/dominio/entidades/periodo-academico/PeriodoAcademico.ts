@@ -3,15 +3,14 @@ import type { IPeriodoAcademico } from "../../interfaces/IPeriodoAcademico.js";
 import { randomUUID } from 'crypto';
 
 export class PeriodoAcademico implements IPeriodoAcademico {
-    public id: string;
+    public readonly id: string;
     public nombre: string;
     public fechaInicio: Date;
     public fechaFin: Date;
     public estado: EstadoPeriodo;
-    public createdAt: Date;
+    public readonly createdAt: Date;
     public updatedAt: Date;
 
-    // Constructor que acepta PROPIEDADES para facilitar la reconstrucción desde la DB
     constructor(props: {
         id?: string;
         nombre: string;
@@ -21,29 +20,37 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         createdAt?: Date;
         updatedAt?: Date;
     }){
+        if (props.fechaFin <= props.fechaInicio) {
+            throw new Error("La fecha de fin debe ser posterior a la fecha de inicio.");
+        }
         this.id = props.id || randomUUID();
         this.nombre = props.nombre;
         this.fechaInicio = props.fechaInicio;
         this.fechaFin = props.fechaFin;
-        
-        // La lógica de estado se aplica si no se proporciona
         this.estado = props.estado || 'inactivo';
-
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
-        
-        // Llamada a lógica de dominio
-        this.actualizarEstado();
-    };
+    }
 
-    actualizarEstado(): void {
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-        const inicio = new Date(this.fechaInicio);
-        const fin = new Date(this.fechaFin);
-        
-        if (hoy > fin) this.estado = 'cerrado';
-        else if (hoy >= inicio && hoy <= fin) this.estado = 'activo';
-        else this.estado = 'inactivo';
-    };
-};
+    public activar(): void {
+        if (this.estado === 'cerrado') {
+            throw new Error("No se puede activar un período que ya está cerrado.");
+        }
+        if (this.estado === 'activo') {
+            return;
+        }
+        this.estado = 'activo';
+        this.updatedAt = new Date();
+    }
+
+    public cerrar(): void {
+        if (this.estado === 'inactivo') {
+            throw new Error("No se puede cerrar un período que aún no ha sido activado.");
+        }
+        if (this.estado === 'cerrado') {
+            return;
+        }
+        this.estado = 'cerrado';
+        this.updatedAt = new Date();
+    }
+}
