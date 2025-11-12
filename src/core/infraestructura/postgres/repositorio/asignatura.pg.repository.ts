@@ -15,7 +15,7 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
         );
     }
 
-    async save(asignatura: IAsignatura): Promise<IAsignatura> {
+    async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
         if (asignatura.getId()) {
             const sql = `UPDATE asignaturas SET nombre = $1, carga_horaria = $2, tipo = $3, fecha_actualizacion = NOW() WHERE id = $4 RETURNING *;`;
             const valores = [asignatura.getNombre(), asignatura.getCargaHoraria(), asignatura.getTipo(), asignatura.getId()];
@@ -26,31 +26,31 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
             const valores = [asignatura.getNombre(), asignatura.getCargaHoraria(), asignatura.getTipo()];
             const resultado = await pool.query(sql, valores); 
             return this.mapearFilaAAsignatura(resultado.rows[0]);
-        }
-    }
+        };
+    };
 
-    async findById(id: number): Promise<IAsignatura | null> {
+    async obtenerPorId(id: number): Promise<IAsignatura | null> {
         const sql = 'SELECT * FROM asignaturas WHERE id = $1;';
         const resultado = await pool.query(sql, [id]); 
         if (resultado.rows.length === 0) return null;
         return this.mapearFilaAAsignatura(resultado.rows[0]);
-    }
+    };
 
-    async findAll(): Promise<IAsignatura[]> {
+    async obtenerTodos(): Promise<IAsignatura[]> {
         const sql = 'SELECT * FROM asignaturas ORDER BY nombre;';
         const resultado = await pool.query(sql, []); 
         return resultado.rows.map(this.mapearFilaAAsignatura);
-    }
+    };
 
-    async delete(id: number): Promise<void> {
+    async eliminar(id: number): Promise<void> {
         const sql = 'DELETE FROM asignaturas WHERE id = $1;';
         await pool.query(sql, [id]); 
-    }
+    };
 
-    async findByNombre(nombre: string): Promise<IAsignatura | null> {
+    async obtenerPorNombre(nombre: string): Promise<IAsignatura | null> {
         const sql = 'SELECT * FROM asignaturas WHERE nombre ILIKE $1;';
         const resultado = await pool.query(sql, [nombre]); 
         if (resultado.rows.length === 0) return null;
         return this.mapearFilaAAsignatura(resultado.rows[0]);
-    }
-}
+    };
+};

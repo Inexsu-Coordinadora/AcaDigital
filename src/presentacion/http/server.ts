@@ -33,11 +33,17 @@ import {
 import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/postgres-programa-academico.pg.repository.js';
 import { registerProgramaAcademicoRoutes } from './rutas/programa-academico.rutas.js';
 
+//plan de estudio
+import {
+  DefinirPlanEstudioUseCase,
+} from '../../core/aplicaciones/plan-estudio/index.js';
+import { PlanEstudioPGRepository } from '../../core/infraestructura/postgres/repositorio/plan-estudio.pg.repository.js';
 
 // Oferta Académica
 import { OfertarAsignaturaUseCase } from '../../core/aplicaciones/oferta-academica/casos-de-uso/OfertarAsignaturaUseCase.js';
 import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgres/repositorio/oferta-academica.pg.repositorio.js';
 import rutasOfertaAcademica from './rutas/oferta-academica.rutas.js';
+
 
 // --- Inyección de Dependencias Manual ---
 const programaRepository = new PostgresProgramaAcademicoRepository();
@@ -64,6 +70,14 @@ const actualizarPeriodoUseCase = new ActualizarPeriodoUseCase(periodoRepository)
 const eliminarPeriodoUseCase = new EliminarPeriodoUseCase(periodoRepository);
 
 
+const planEstudioRepository = new PlanEstudioPGRepository();
+const definirPlanEstudioUseCase = new DefinirPlanEstudioUseCase(
+    planEstudioRepository,
+    programaRepository,
+    asignaturaRepository
+);
+
+
 // Oferta Académica
 const ofertaRepositorio = new OfertaAcademicaPGRepositorio();
 
@@ -76,7 +90,6 @@ const ofertarAsignaturaUseCase = new OfertarAsignaturaUseCase(
 
 // --- Servidor Fastify ---
 export const server = fastify({ logger: true });
-
 
 
 server.setErrorHandler((error, request, reply) => {
@@ -119,6 +132,8 @@ server.register(async (instance, options) => {
         obtenerProgramaPorIdUseCase,
         actualizarProgramaUseCase,
         eliminarProgramaUseCase,
+      
+        definirPlanEstudioUseCase
         
     );
 }, { prefix: '/api/v1/programas-academicos' });
@@ -133,7 +148,7 @@ server.register(rutasAsignatura, {
         obtenerAsignaturaPorIdUseCase,
         actualizarAsignaturaUseCase,
         eliminarAsignaturaUseCase,
-    }
+    };
 });
 
 // Periodo Academico
