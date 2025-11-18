@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "asignatura",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

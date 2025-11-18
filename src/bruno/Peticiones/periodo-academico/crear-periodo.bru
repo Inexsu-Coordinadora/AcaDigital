@@ -1,0 +1,24 @@
+meta {
+  name: crear-periodo
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/api/v1/periodos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "2025-IV",
+    "fechaInicio": "2025-07-15",
+    "fechaFin": "2025-12-20"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
