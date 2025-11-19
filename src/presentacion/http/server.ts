@@ -1,41 +1,41 @@
 import fastify from 'fastify';
-
+import { configuracion } from '../../core/config/index.js';
 //periodo academico
 import {
-  CrearPeriodoUseCase,
-  ObtenerPeriodosUseCase,
-  ObtenerPeriodoPorIdUseCase,
-  ActualizarPeriodoUseCase,
-  EliminarPeriodoUseCase
+    CrearPeriodoUseCase,
+    ObtenerPeriodosUseCase,
+    ObtenerPeriodoPorIdUseCase,
+    ActualizarPeriodoUseCase,
+    EliminarPeriodoUseCase
 } from '../../core/aplicaciones/periodo-academico/index.js';
 import { PostgresPeriodoAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/periodo-academico.pg.repository.js';
 import { registerPeriodoAcademicoRoutes } from './rutas/periodo-academico.rutas.js';
 
 //asignatura
 import {
-  CrearAsignaturaUseCase,
-  ObtenerAsignaturasUseCase,
-  ObtenerAsignaturaPorIdUseCase,
-  ActualizarAsignaturaUseCase,
-  EliminarAsignaturaUseCase
-} from '../../core/aplicaciones/asignatura/index.js'; 
+    CrearAsignaturaUseCase,
+    ObtenerAsignaturasUseCase,
+    ObtenerAsignaturaPorIdUseCase,
+    ActualizarAsignaturaUseCase,
+    EliminarAsignaturaUseCase
+} from '../../core/aplicaciones/asignatura/index.js';
 import { AsignaturaPGRepository } from '../../core/infraestructura/postgres/repositorio/asignatura.pg.repository.js';
 import rutasAsignatura from './rutas/asignatura.rutas.js';
 
 //programa academico
 import {
-  CrearProgramaAcademicoUseCase,
-  ListarProgramasAcademicosUseCase,
-  ObtenerProgramaAcademicoPorIdUseCase,
-  ActualizarProgramaAcademicoUseCase,
-  EliminarProgramaAcademicoUseCase
+    CrearProgramaAcademicoUseCase,
+    ListarProgramasAcademicosUseCase,
+    ObtenerProgramaAcademicoPorIdUseCase,
+    ActualizarProgramaAcademicoUseCase,
+    EliminarProgramaAcademicoUseCase
 } from '../../core/aplicaciones/programa-academico/index.js';
 import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/postgres-programa-academico.pg.repository.js';
 import { registerProgramaAcademicoRoutes } from './rutas/programa-academico.rutas.js';
 
 //plan de estudio
 import {
-  DefinirPlanEstudioUseCase,
+    DefinirPlanEstudioUseCase,
 } from '../../core/aplicaciones/plan-estudio/index.js';
 import { PlanEstudioPGRepository } from '../../core/infraestructura/postgres/repositorio/plan-estudio.pg.repository.js';
 
@@ -54,7 +54,7 @@ const obtenerProgramaPorIdUseCase = new ObtenerProgramaAcademicoPorIdUseCase(pro
 const actualizarProgramaUseCase = new ActualizarProgramaAcademicoUseCase(programaRepository);
 const eliminarProgramaUseCase = new EliminarProgramaAcademicoUseCase(programaRepository);
 
-const asignaturaRepository = new AsignaturaPGRepository ();
+const asignaturaRepository = new AsignaturaPGRepository();
 const crearAsignaturaUseCase = new CrearAsignaturaUseCase(asignaturaRepository);
 const listarAsignaturasUseCase = new ObtenerAsignaturasUseCase(asignaturaRepository);
 const obtenerAsignaturaPorIdUseCase = new ObtenerAsignaturaPorIdUseCase(asignaturaRepository);
@@ -83,9 +83,9 @@ const ofertaRepositorio = new OfertaAcademicaPGRepositorio();
 
 const ofertarAsignaturaUseCase = new OfertarAsignaturaUseCase(
     ofertaRepositorio,
-    periodoRepository,       
-    programaRepository,     
-    asignaturaRepository     
+    periodoRepository,
+    programaRepository,
+    asignaturaRepository
 );
 
 // --- Servidor Fastify ---
@@ -94,8 +94,8 @@ export const server = fastify({ logger: true });
 
 server.setErrorHandler((error, request, reply) => {
     if (error.code === 'FST_ERR_VALIDATION' && Array.isArray(error.validation)) {
-        
-        const validationError: any = error.validation.find(e => e); 
+
+        const validationError: any = error.validation.find(e => e);
         let errorMessage: string;
 
         if (validationError) {
@@ -105,11 +105,11 @@ server.setErrorHandler((error, request, reply) => {
                 const field = validationError.dataPath ? validationError.dataPath.replace('/', '') : 'solicitud';
                 errorMessage = `Error de validación en el campo '${field}': ${validationError.message}`;
             }
-            
+
             return reply.code(400).send({ error: errorMessage });
         }
     }
-    
+
     if (error.statusCode) {
         reply.log.error(error);
         reply.status(error.statusCode).send(error);
@@ -132,9 +132,9 @@ server.register(async (instance, options) => {
         obtenerProgramaPorIdUseCase,
         actualizarProgramaUseCase,
         eliminarProgramaUseCase,
-      
+
         definirPlanEstudioUseCase
-        
+
     );
 }, { prefix: '/api/v1/programas-academicos' });
 
@@ -161,7 +161,7 @@ server.register(async (instance, options) => {
         actualizarPeriodoUseCase,
         eliminarPeriodoUseCase
     );
-}, { prefix: '/api/v1/periodos' }); 
+}, { prefix: '/api/v1/periodos' });
 
 
 // Oferta Académica
@@ -175,15 +175,15 @@ server.register(rutasOfertaAcademica, {
 
 // --- Iniciar el Servidor ---
 export const start = async () => {
-  try {
-    await server.listen({ port: 3000, host: '0.0.0.0' });
-    console.log('Servidor corriendo en http://localhost:3000');
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  };
+    try {
+        await server.listen({ port: configuracion.PORT, host: '0.0.0.0' });
+        console.log(`Servidor corriendo en http://localhost:${configuracion.PORT} en modo ${configuracion.NODE_ENV}`);
+    } catch (err) {
+        server.log.error(err);
+        process.exit(1);
+    };
 };
 
 if (import.meta.main) {
-  start();
+    start();
 };
