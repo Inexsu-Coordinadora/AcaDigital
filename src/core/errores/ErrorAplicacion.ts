@@ -35,3 +35,11 @@ export class ErrorValidacion extends errorAplicacion {
         Object.setPrototypeOf(this, ErrorValidacion.prototype);
     };
 };
+
+// Error cuando la operacion viola una regla de negocio
+export class ErrorReglaNegocio extends errorAplicacion {
+    constructor(mensaje: string = 'La operacion viola una regla de negocio') {
+        super('ERROR_REGLA_NEGOCIO', mensaje);
+        Object.setPrototypeOf(this, ErrorReglaNegocio.prototype);
+    };
+};
