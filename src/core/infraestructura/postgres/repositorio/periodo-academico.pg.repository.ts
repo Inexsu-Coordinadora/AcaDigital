@@ -87,7 +87,7 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
         let query = `
             SELECT * FROM periodos
             WHERE estado = 'activo'
-              AND (fecha_inicio <= $2 AND fecha_fin >= $1)
+            AND (fecha_inicio <= $2 AND fecha_fin >= $1)
         `;
         const values: any[] = [fechaInicio, fechaFin];
 
