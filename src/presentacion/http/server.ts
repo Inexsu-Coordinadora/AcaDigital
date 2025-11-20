@@ -41,7 +41,7 @@ import { PlanEstudioPGRepository } from '../../core/infraestructura/postgres/rep
 
 // Oferta Académica
 import { OfertarAsignaturaUseCase } from '../../core/aplicaciones/oferta-academica/casos-de-uso/OfertarAsignaturaUseCase.js';
-import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgres/repositorio/oferta-academica.pg.repositorio.js';
+import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgres/repositorio/oferta-academica.pg.repository.js';
 import rutasOfertaAcademica from './rutas/oferta-academica.rutas.js';
 
 // errores
