@@ -44,6 +44,9 @@ import { OfertarAsignaturaUseCase } from '../../core/aplicaciones/oferta-academi
 import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgres/repositorio/oferta-academica.pg.repositorio.js';
 import rutasOfertaAcademica from './rutas/oferta-academica.rutas.js';
 
+// errores
+import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../core/errores/errorAplicacion.js';
+
 
 // --- Inyección de Dependencias Manual ---
 const programaRepository = new PostgresProgramaAcademicoRepository();
@@ -91,34 +94,69 @@ const ofertarAsignaturaUseCase = new OfertarAsignaturaUseCase(
 // --- Servidor Fastify ---
 export const server = fastify({ logger: true });
 
-
 server.setErrorHandler((error, request, reply) => {
-    if (error.code === 'FST_ERR_VALIDATION' && Array.isArray(error.validation)) {
+    let statusCode = 500;
+    let responseBody = {
+        error: 'Error interno del servidor',
+        detalle: error.message || 'Error desconocido',
+        codigo: 'INTERNAL_SERVER_ERROR'
+    };
 
+    if (error.code === 'FST_ERR_VALIDATION' && error.validation) {
         const validationError: any = error.validation.find(e => e);
-        let errorMessage: string;
+        let detailMessage: string;
 
         if (validationError) {
-            if (validationError.keyword === 'minimum' && validationError.params?.limit === 1) {
-                errorMessage = 'El cupo disponible debe ser mayor que cero.';
-            } else {
-                const field = validationError.dataPath ? validationError.dataPath.replace('/', '') : 'solicitud';
-                errorMessage = `Error de validación en el campo '${field}': ${validationError.message}`;
-            }
+            const field = validationError.dataPath ? validationError.dataPath.replace('/', '') : validationError.instancePath || 'solicitud';
+            detailMessage = `El campo '${field}' es inválido. Detalle: ${validationError.message}`;
+        } else {
+            detailMessage = 'Error de validacion de esquema de entrada.';
+        };
 
-            return reply.code(400).send({ error: errorMessage });
-        }
-    }
+        statusCode = 400;
+        responseBody = {
+            error: 'Solicitud Inva lida (Validacion Schema)',
+            detalle: detailMessage,
+            codigo: 'REQUEST_VALIDATION_FAILED'
+        };
 
-    if (error.statusCode) {
-        reply.log.error(error);
-        reply.status(error.statusCode).send(error);
+    } else if (error instanceof ErrorAplicacion) {
+
+        switch (error.codigo) {
+            case 'NO_ENCONTRADO':
+                statusCode = 404; // No encontrado
+                break;
+            case 'CONFLICTO':
+                statusCode = 409; // Conflcito
+                break;
+            case 'ERROR_REGLA_NEGOCIO':
+            case 'ERROR_VALIDACION':
+                statusCode = 400; // Request mala
+                break;
+            default:
+                statusCode = 500; // Error inesperado/default
+                break;
+        };
+
+        responseBody = {
+            error: error.name,
+            detalle: error.message,
+            codigo: error.codigo
+        };
+
     } else {
         reply.log.error(error);
-        reply.status(500).send({ error: 'Error interno del servidor.' });
-    }
-});
+        statusCode = (error as any).statusCode || 500;
+        responseBody = {
+            error: 'Error inesperado del sistema',
+            detalle: 'Ha ocurrido un error inesperado. Contacte al administrador.',
+            codigo: 'UNHANDLED_EXCEPTION'
+        };
+    };
 
+    // Enviar la respuesta con el formato uniforme
+    return reply.code(statusCode).send(responseBody);
+});
 
 
 // --- Registrar Rutas ---

@@ -3,13 +3,16 @@ import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/reposit
 import type { CrearAsignaturaDTO } from '../dtos/CrearAsignaturaDTO.js';
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 
+import { ErrorConflicto } from '../../../errores/errorAplicacion.js';
+
+
 export class CrearAsignaturaUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) { }
 
     async execute(dto: CrearAsignaturaDTO): Promise<IAsignatura> {
         const existe = await this.repositorio.obtenerPorNombre(dto.nombre);
         if (existe) {
-            throw new Error(`409: La asignatura con nombre '${dto.nombre}' ya existe.`);
+            throw new ErrorConflicto(`La asignatura con nombre '${dto.nombre}' ya existe.`);
         }
 
         const nuevaAsignatura = new Asignatura(
