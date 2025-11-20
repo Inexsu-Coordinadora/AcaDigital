@@ -8,7 +8,7 @@ import { pool } from '../database/Conexion.js';
 
 export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRepositorio {
 
-    async crear(programa: IProgramaAcademico): Promise<IProgramaAcademico> {
+    async guardar(programa: IProgramaAcademico): Promise<IProgramaAcademico> {
         const query = `
             INSERT INTO programas_academicos 
             (id, nombre, descripcion, nivel, modalidad, duracion_valor, duracion_unidad)

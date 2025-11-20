@@ -7,8 +7,7 @@ import {
   EliminarProgramaAcademicoUseCase,
   type CrearProgramaDto,
   type ActualizarProgramaDto,
-  crearProgramaSchema,
-  actualizarProgramaSchema
+  
 } from '../../../core/aplicaciones/programa-academico/index.js';
 
 // Plan de estudio
@@ -91,20 +90,9 @@ export function registerProgramaAcademicoRoutes(
   // programa academico
 
   // Crear programa academico (Ruta: /api/v1/programas-academicos)
-  server.post('/', async (request, reply) => {
+  server.post('/', { schema: { body: crearProgramaBodySchema } }, async (request, reply) => {
     try {
-      const validacion = crearProgramaSchema.safeParse(request.body);
-      if (!validacion.success) {
-        return reply.status(400).send({
-          message: 'Error de validación',
-          errors: validacion.error.issues.map((err: any) => ({
-            campo: err.path.join('.'),
-            mensaje: err.message
-          }))
-        });
-      };
-
-      const dto = validacion.data as CrearProgramaDto;
+      const dto = request.body as CrearProgramaDto;
       const nuevoPrograma = await crearProgramaUseCase.execute(dto);
       return reply.status(201).send({
         id: nuevoPrograma.getId(),
@@ -119,7 +107,7 @@ export function registerProgramaAcademicoRoutes(
       });
     } catch (error: any) {
       return reply.status(400).send({ message: error.message });
-    };
+    }
   });
 
   // Listar todos los programas academicos (Ruta: /api/v1/programas-academicos)
@@ -177,7 +165,7 @@ export function registerProgramaAcademicoRoutes(
   });
 
   // Actualizar programa academico (Ruta: /api/v1/programas-academicos/:id)
-  server.put('/:id', async (request, reply) => {
+  server.put('/:id', { schema: { params: idParamSchema, body: actualizarProgramaBodySchema } }, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const idLimpio = id?.trim();
@@ -186,19 +174,7 @@ export function registerProgramaAcademicoRoutes(
         return reply.status(400).send({ message: 'El ID es obligatorio' });
       };
 
-      // Validar el body con Zod
-      const validacion = actualizarProgramaSchema.safeParse(request.body);
-      if (!validacion.success) {
-        return reply.status(400).send({
-          message: 'Error de validación',
-          errors: validacion.error.issues.map((err: any) => ({
-            campo: err.path.join('.'),
-            mensaje: err.message
-          }))
-        });
-      };
-
-      const dto = validacion.data as ActualizarProgramaDto;
+      const dto = request.body as ActualizarProgramaDto;
       const programaActualizado = await actualizarProgramaUseCase.execute(idLimpio, dto);
 
       return reply.send({
@@ -239,4 +215,40 @@ export function registerProgramaAcademicoRoutes(
       return reply.status(400).send({ message: error.message });
     };
   });
+};
+
+// Schema body crear programa academico (Fastify JSON Schema)
+const crearProgramaBodySchema = {
+  type: 'object',
+  required: ['nombre', 'descripcion', 'nivel', 'modalidad', 'duracionValor', 'duracionUnidad'],
+  properties: {
+    nombre: { type: 'string', minLength: 1 },
+    descripcion: { type: 'string', minLength: 1 },
+    nivel: { type: 'string', enum: ['Técnico', 'Pregrado', 'Posgrado', 'Doctorado'] },
+    modalidad: { type: 'string', enum: ['Presencial', 'Virtual', 'Semi-Presencial'] },
+    duracionValor: { type: 'number', minimum: 0.01 },
+    duracionUnidad: { type: 'string', enum: ['meses', 'años', 'semestres', 'trimestres'] }
+  },
+  additionalProperties: false
+};
+
+// Schema body actualizar programa academico
+const actualizarProgramaBodySchema = {
+  type: 'object',
+  required: ['nombre', 'descripcion'],
+  properties: {
+    nombre: { type: 'string', minLength: 1 },
+    descripcion: { type: 'string', minLength: 1 }
+  },
+  additionalProperties: false
+};
+
+// Schema params id
+const idParamSchema = {
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: { type: 'string', minLength: 1 }
+  },
+  additionalProperties: false
 };
