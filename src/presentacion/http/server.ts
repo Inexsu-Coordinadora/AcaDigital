@@ -30,7 +30,7 @@ import {
     ActualizarProgramaAcademicoUseCase,
     EliminarProgramaAcademicoUseCase
 } from '../../core/aplicaciones/programa-academico/index.js';
-import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/postgres-programa-academico.pg.repository.js';
+import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/programa-academico.pg.repository.js';
 import { registerProgramaAcademicoRoutes } from './rutas/programa-academico.rutas.js';
 
 //plan de estudio
