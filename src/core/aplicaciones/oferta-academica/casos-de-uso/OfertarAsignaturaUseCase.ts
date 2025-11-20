@@ -6,6 +6,9 @@ import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositori
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 
+
+import { ErrorNoEncontrado, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+
 export class OfertarAsignaturaUseCase {
     constructor(
         private readonly ofertaRepositorio: IOfertaAcademicaRepositorio,
@@ -19,22 +22,22 @@ export class OfertarAsignaturaUseCase {
 
         const periodo = await this.periodoRepositorio.obtenerPorId(periodoId);
         if (!periodo) {
-            throw new Error(`404: Periodo con ID ${periodoId} no encontrado.`);
-        }
+            throw new ErrorNoEncontrado (`Periodo con ID ${periodoId} no encontrado.`);
+        };
 
         const programa = await this.programaRepositorio.obtenerPorId(programaId);
         if (!programa) {
-            throw new Error(`404: Programa con ID ${programaId} no encontrado.`);
-        }
+            throw new ErrorNoEncontrado (`Programa con ID ${programaId} no encontrado.`);
+        };
 
         const asignatura = await this.asignaturaRepositorio.obtenerPorId(asignaturaId);
         if (!asignatura) {
-            throw new Error(`404: Asignatura con ID ${asignaturaId} no encontrada.`);
-        }
+            throw new ErrorNoEncontrado (`Asignatura con ID ${asignaturaId} no encontrada.`);
+        };
 
         if (periodo.estado !== 'activo') {
-            throw new Error(`400: El periodo ${periodo.nombre} no está activo para crear ofertas. Estado actual: ${periodo.estado}.`);
-        }
+            throw new ErrorReglaNegocio (`El periodo ${periodo.nombre} no esta activo para crear ofertas. Estado actual: ${periodo.estado}.`);
+        };
         
         const nuevaOferta = new OfertaAcademica(
             periodoId,
@@ -45,5 +48,5 @@ export class OfertarAsignaturaUseCase {
         );
 
         return this.ofertaRepositorio.guardar(nuevaOferta);
-    }
-}
+    };
+};
