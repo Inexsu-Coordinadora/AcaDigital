@@ -7,8 +7,7 @@ import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 
 
-import { ErrorNoEncontrado } from '../../../errores/errorAplicacion.js';
-import { ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
 
 export class OfertarAsignaturaUseCase {
     constructor(
