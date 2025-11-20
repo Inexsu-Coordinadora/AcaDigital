@@ -5,6 +5,8 @@ import { DefinirPlanEstudioDTO } from "../dtos/DefinirPlanEstudioDTO.js";
 import { IProgramaAcademicoRepositorio } from "../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js";
 import { IAsignaturaRepositorio } from "../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js";
 
+import { ErrorNoEncontrado } from '../../../errores/errorAplicacion.js';
+import { ErrorConflicto } from '../../../errores/errorAplicacion.js';
 
 export class DefinirPlanEstudioUseCase {
     constructor(
@@ -17,12 +19,12 @@ export class DefinirPlanEstudioUseCase {
 
         const programa = await this.programaRepo.obtenerPorId(dto.programaId);
         if (!programa) {
-            throw new Error('Programa academico no encontrado');
+            throw new ErrorNoEncontrado ('Programa academico no encontrado');
         };
 
         const asignatura = await this.asignaturaRepo.obtenerPorId(dto.asignaturaId);
         if (!asignatura) {
-            throw new Error('Asignatura no encontrada');
+            throw new ErrorNoEncontrado ('Asignatura no encontrada');
         };
 
         const esDuplicado = await this.planRepo.existeVinculo(
@@ -30,7 +32,7 @@ export class DefinirPlanEstudioUseCase {
             dto.asignaturaId
         );
         if (esDuplicado) {
-            throw new Error('La asignatura ya esta registrada en este programa');
+            throw new ErrorConflicto ('La asignatura ya esta registrada en este programa');
         };
 
         const plan = new PlanEstudio(dto);
