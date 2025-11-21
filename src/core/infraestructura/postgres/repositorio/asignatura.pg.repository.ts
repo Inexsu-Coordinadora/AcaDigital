@@ -3,8 +3,17 @@ import { Asignatura, TipoAsignatura } from '../../../dominio/entidades/asignatur
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js'; 
 import { pool } from '../database/Conexion.js'; 
 
+interface AsignaturaRow {
+    id: number;
+    nombre: string;
+    carga_horaria: number;
+    tipo: string;
+    fecha_creacion: string;
+    fecha_actualizacion: string;
+}
+
 export class AsignaturaPGRepository implements IAsignaturaRepositorio {
-    private mapearFilaAAsignatura(fila: any): IAsignatura {
+    private mapearFilaAAsignatura(fila: AsignaturaRow): IAsignatura {
         return new Asignatura(
             fila.nombre,
             fila.carga_horaria, 

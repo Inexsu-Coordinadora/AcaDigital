@@ -2,8 +2,19 @@ import type { IOfertaAcademica, IOfertaAcademicaRepositorio } from '../../../dom
 import { OfertaAcademica } from '../../../dominio/entidades/oferta-academica/OfertaAcademica.js';
 import { pool } from '../database/Conexion.js';
 
+interface OfertaAcademicaRow {
+    id: number;
+    periodo_id: string;
+    programa_id: string;
+    asignatura_id: number;
+    grupo: string;
+    cupo_disponible: number;
+    created_at: string;
+    updated_at: string;
+}
+
 export class OfertaAcademicaPGRepositorio implements IOfertaAcademicaRepositorio {
-    private mapearFilaAOferta(fila: any): OfertaAcademica {
+    private mapearFilaAOferta(fila: OfertaAcademicaRow): OfertaAcademica {
         return new OfertaAcademica(
             fila.periodo_id,
             fila.programa_id,
