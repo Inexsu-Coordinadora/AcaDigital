@@ -73,13 +73,24 @@ describe('DefinirPlanEstudioUseCase', () => {
     });
 
     // Test 3: Caso de error no existe la Asignatura
-    it('debería lanzar un ErrorAplicacion si la Asignatura no existe', async () => {
+    it('deberia lanzar un ErrorAplicacion si la Asignatura no existe', async () => {
         (mockAsignaturaRepository.obtenerPorId as jest.Mock).mockResolvedValue(null);
 
         await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
             ErrorAplicacion
         );
         expect(mockPlanEstudioRepository.existeVinculo).not.toHaveBeenCalled();
+        expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
+    });
+
+    // Test 4: Caso de error duplicidad
+    it('deberia lanzar un ErrorAplicacion si el vinculo de plan de estudio ya existe (duplicidad)', async () => {
+        (mockPlanEstudioRepository.existeVinculo as jest.Mock).mockResolvedValue(true);
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
+            ErrorAplicacion
+        );
+        expect(mockPlanEstudioRepository.existeVinculo).toHaveBeenCalledWith(dtoValido.programaId, dtoValido.asignaturaId);
         expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
     });
 
