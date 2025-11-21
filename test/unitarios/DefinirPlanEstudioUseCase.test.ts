@@ -60,15 +60,26 @@ describe('DefinirPlanEstudioUseCase', () => {
         expect(resultado).toHaveProperty('id');
     });
 
-    // Test 2: Caso de error
+    // Test 2: Caso de error no existe el Programa Academico
     it('deberia lanzar un ErrorAplicacion si el Programa Academico no existe', async () => {
         (mockProgramaRepository.obtenerPorId as jest.Mock).mockResolvedValue(null);
 
         await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
             ErrorAplicacion 
         );
-        
+
         expect(mockAsignaturaRepository.obtenerPorId).not.toHaveBeenCalled();
+        expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
+    });
+
+    // Test 3: Caso de error no existe la Asignatura
+    it('debería lanzar un ErrorAplicacion si la Asignatura no existe', async () => {
+        (mockAsignaturaRepository.obtenerPorId as jest.Mock).mockResolvedValue(null);
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
+            ErrorAplicacion
+        );
+        expect(mockPlanEstudioRepository.existeVinculo).not.toHaveBeenCalled();
         expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
     });
 
