@@ -3,9 +3,10 @@ import { IProgramaAcademicoRepositorio } from '../../src/core/dominio/interfaces
 import { IAsignaturaRepositorio } from '../../src/core/dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 import { IPlanEstudioRepositorio } from '../../src/core/dominio/interfaces/repositorio/IPlanEstudioRepositorio.js';
 
+import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../src/core/errores/errorAplicacion.js';
+
 const mockProgramaRepository: Partial<IProgramaAcademicoRepositorio> = {
     obtenerPorId: jest.fn() as jest.Mock<Promise<any | null>, [string]>,
-
 };
 
 const mockAsignaturaRepository: Partial<IAsignaturaRepositorio> = {
@@ -58,4 +59,17 @@ describe('DefinirPlanEstudioUseCase', () => {
         expect(mockPlanEstudioRepository.guardar).toHaveBeenCalledTimes(1);
         expect(resultado).toHaveProperty('id');
     });
+
+    // Test 2: Caso de error
+    it('deberia lanzar un ErrorAplicacion si el Programa Academico no existe', async () => {
+        (mockProgramaRepository.obtenerPorId as jest.Mock).mockResolvedValue(null);
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
+            ErrorAplicacion 
+        );
+        
+        expect(mockAsignaturaRepository.obtenerPorId).not.toHaveBeenCalled();
+        expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
+    });
+
 });
