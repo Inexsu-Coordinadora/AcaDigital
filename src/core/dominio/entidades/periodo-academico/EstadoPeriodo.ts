@@ -1,1 +1,6 @@
-export type EstadoPeriodo = 'activo' | 'inactivo' | 'cerrado';
+export enum EstadoPeriodo {
+    ACTIVO = 'activo',
+    INACTIVO = 'inactivo',
+    CERRADO = 'cerrado',
+}
+
