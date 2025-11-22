@@ -8,7 +8,7 @@ import { Duracion } from '../../src/core/dominio/entidades/programa-academico/Du
 import { NivelEducativo, Modalidad } from '../../src/core/dominio/entidades/programa-academico/NivelYModalidad.js';
 import { Asignatura, TipoAsignatura } from '../../src/core/dominio/entidades/asignatura/Asignatura.js';
 
-import { ErrorConflicto } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorAplicacion } from '../../src/core/errores/errorAplicacion.js';
 
 let planRepo: PlanEstudioRepositorioInMemory;
 let programaRepo: ProgramaAcademicoRepositorioInMemory;
@@ -70,19 +70,33 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
         const existeVinculo = await planRepo.existeVinculo(PROGRAMA_ID, ASIGNATURA_ID);
         expect(existeVinculo).toBe(true);
     });
-    // Test 2: Caso de Error ya existe el vínculo (programa, asignatura)
-    it('debería lanzar ErrorConflicto si el vínculo ya existe', async () => {
-        const planExistente = { 
-            ...dtoValido, 
-            createdAt: new Date(), 
-            updatedAt: new Date() 
-        }; 
-        
-        await planRepo.guardar(planExistente); 
+    // Test 2: Caso de Error ya existe el vinculo (programa, asignatura)
+    it('deberia lanzar ErrorConflicto si el vinculo ya existe', async () => {
+        const planExistente = {
+            ...dtoValido,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        await planRepo.guardar(planExistente);
         await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(ErrorConflicto);
-        
+
         await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
             `La asignatura ya esta registrada en este programa`
         );
     });
+    // Test 3: Caso de error Programa Academico no existe
+    it('deberia lanzar ErrorNoEncontrado si el programa academico no existe', async () => {
+        const programaInexistenteId = 'PROG-INEXISTENTE';
+        const dtoProgramaInvalido = {
+            ...dtoValido,
+            programaId: programaInexistenteId,
+        };
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoProgramaInvalido)).rejects.toThrow(ErrorAplicacion);
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoProgramaInvalido)).rejects.toThrow(
+            'Programa academico no encontrado'
+        );
+    });
+
 });
