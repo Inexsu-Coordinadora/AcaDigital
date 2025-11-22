@@ -98,5 +98,17 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
             'Programa academico no encontrado'
         );
     });
+        // Test 4: Caso de error Asignatura no existe
+    it('deberia lanzar ErrorNoEncontrado si la asignatura no existe', async () => {
+        const asignaturaInexistenteId = 999;
+        const dtoAsignaturaInvalida = {
+            ...dtoValido,
+            asignaturaId: asignaturaInexistenteId,
+        };
 
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoAsignaturaInvalida)).rejects.toThrow(ErrorAplicacion);
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoAsignaturaInvalida)).rejects.toThrow(
+            'Asignatura no encontrada'
+        );
+    });
 });
