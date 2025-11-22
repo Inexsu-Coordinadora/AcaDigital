@@ -7,7 +7,6 @@ export class ErrorAplicacion extends Error {
         super(mensaje);
         this.codigo = codigo;
         this.name = codigo;
-
         Object.setPrototypeOf(this, ErrorAplicacion.prototype);
     };
 };
@@ -16,7 +15,7 @@ export class ErrorAplicacion extends Error {
 export class ErrorNoEncontrado extends ErrorAplicacion {
     constructor(mensaje: string = 'El recurso solicitado no existe') {
         super('NO_ENCONTRADO', mensaje);
-        Object.setPrototypeOf(this, ErrorAplicacion.prototype);
+        Object.setPrototypeOf(this, ErrorNoEncontrado.prototype); 
     };
 };
 
