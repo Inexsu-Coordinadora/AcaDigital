@@ -9,26 +9,25 @@ export class ProgramaAcademicoRepositorioInMemory implements IProgramaAcademicoR
     };
 
     /**
-     * Guarda un nuevo Programa Académico.
+     * Guarda un nuevo Programa Academico.
      * @param programa
      * @returns
      */
     async crear(programa: IProgramaAcademico): Promise<IProgramaAcademico> {
         const id = programa.getId();
         if (!id) {
-            throw new Error('El programa académico debe tener un ID para ser creado.');
+            throw new Error('El programa academico debe tener un ID para ser creado.');
         };
         this.programas.set(id, programa);
         return programa;
     };
 
     /**
-     * Obtiene un Programa Académico por su ID.
+     * Obtiene un Programa Academico por su ID.
      * @param id
      * @returns
      */
     async obtenerPorId(id: string): Promise<IProgramaAcademico | null> {
-        // <-- Recupera el programa usando el ID
         return this.programas.get(id) || null;
     }
 
