@@ -8,7 +8,7 @@ import { Duracion } from '../../src/core/dominio/entidades/programa-academico/Du
 import { NivelEducativo, Modalidad } from '../../src/core/dominio/entidades/programa-academico/NivelYModalidad.js';
 import { Asignatura, TipoAsignatura } from '../../src/core/dominio/entidades/asignatura/Asignatura.js';
 
-import { ErrorConflicto, ErrorAplicacion } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../src/core/errores/errorAplicacion.js';
 
 let planRepo: PlanEstudioRepositorioInMemory;
 let programaRepo: ProgramaAcademicoRepositorioInMemory;
@@ -109,6 +109,18 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
         await expect(definirPlanEstudioUseCase.ejecutar(dtoAsignaturaInvalida)).rejects.toThrow(ErrorAplicacion);
         await expect(definirPlanEstudioUseCase.ejecutar(dtoAsignaturaInvalida)).rejects.toThrow(
             'Asignatura no encontrada'
+        );
+    });
+    // Test 5: Caso de error Semestre/Nivel invalido
+    it('deberia lanzar ErrorValidacion si el semestre/nivel es invalido (0 o negativo)', async () => {
+        const dtoSemestreInvalido = {
+            ...dtoValido,
+            semestreNivel: 0, 
+        };
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoSemestreInvalido)).rejects.toThrow(ErrorValidacion);
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoSemestreInvalido)).rejects.toThrow(
+            'El semestre/nivel debe ser un entero positivo'
         );
     });
 });
