@@ -7,8 +7,12 @@
   "scripts": {
     "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
     "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
+    "start": "node dist/server.js",
+
     "test": "jest",
-    "start": "node dist/server.js"
+    "test:watch": "jest --watch",
+    "test:unit": "jest --testPathPattern=./src/core/aplicaciones/.*",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
