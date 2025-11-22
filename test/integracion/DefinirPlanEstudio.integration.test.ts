@@ -70,6 +70,7 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
         const existeVinculo = await planRepo.existeVinculo(PROGRAMA_ID, ASIGNATURA_ID);
         expect(existeVinculo).toBe(true);
     });
+
     // Test 2: Caso de Error ya existe el vinculo (programa, asignatura)
     it('deberia lanzar ErrorConflicto si el vinculo ya existe', async () => {
         const planExistente = {
@@ -85,6 +86,7 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
             `La asignatura ya esta registrada en este programa`
         );
     });
+
     // Test 3: Caso de error Programa Academico no existe
     it('deberia lanzar ErrorNoEncontrado si el programa academico no existe', async () => {
         const programaInexistenteId = 'PROG-INEXISTENTE';
@@ -98,7 +100,8 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
             'Programa academico no encontrado'
         );
     });
-        // Test 4: Caso de error Asignatura no existe
+
+    // Test 4: Caso de error Asignatura no existe
     it('deberia lanzar ErrorNoEncontrado si la asignatura no existe', async () => {
         const asignaturaInexistenteId = 999;
         const dtoAsignaturaInvalida = {
@@ -111,16 +114,30 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
             'Asignatura no encontrada'
         );
     });
+
     // Test 5: Caso de error Semestre/Nivel invalido
     it('deberia lanzar ErrorValidacion si el semestre/nivel es invalido (0 o negativo)', async () => {
         const dtoSemestreInvalido = {
             ...dtoValido,
-            semestreNivel: 0, 
+            semestreNivel: 0,
         };
 
         await expect(definirPlanEstudioUseCase.ejecutar(dtoSemestreInvalido)).rejects.toThrow(ErrorValidacion);
         await expect(definirPlanEstudioUseCase.ejecutar(dtoSemestreInvalido)).rejects.toThrow(
             'El semestre/nivel debe ser un entero positivo'
+        );
+    });
+
+    // Test 6: Caso de error Creditos de Carga invalidos
+    it('deberia lanzar ErrorValidacion si la carga de creditos es invalido (0 o negativo)', async () => {
+        const dtoCreditosInvalidos = {
+            ...dtoValido,
+            creditosCarga: -1,
+        };
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoCreditosInvalidos)).rejects.toThrow(ErrorValidacion);
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoCreditosInvalidos)).rejects.toThrow(
+            'Los creditos/carga horaria deben ser mayor que cero'
         );
     });
 });
