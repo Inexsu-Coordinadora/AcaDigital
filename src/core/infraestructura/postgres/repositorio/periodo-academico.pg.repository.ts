@@ -1,12 +1,23 @@
 import { pool } from '../database/Conexion.js';
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcademico.js';
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
+
+interface PeriodoRow {
+    id: string;
+    nombre: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    estado: EstadoPeriodo;
+    created_at: string;
+    updated_at: string;
+}
 
 export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
     async guardar(periodo: IPeriodoAcademico): Promise<IPeriodoAcademico> {
         const query = `
             INSERT INTO periodos 
-            (id, nombre, fecha_inicio, fecha_fin, estado, created_At, updated_At)
+            (id, nombre, fecha_inicio, fecha_fin, estado, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
           RETURNING *
         `;
@@ -41,7 +52,7 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
         return rows[0] ? this.mapear(rows[0]) : null;
     };
 
-    async obtenerTodos(filtro?: { estado?: string }): Promise<IPeriodoAcademico[]> {
+    async obtenerTodos(filtro?: { estado?: EstadoPeriodo }): Promise<IPeriodoAcademico[]> {
         let query = 'SELECT * FROM periodos';
         const values: any[] = [];
 
@@ -62,7 +73,7 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
                 fecha_inicio = $2,
                 fecha_fin = $3,
                 estado = $4,
-                updated_At = NOW()
+                updated_at = NOW()
             WHERE id = $5
           RETURNING *
         `;
@@ -86,13 +97,13 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
     async obtenerPeriodosActivosTraslapados(fechaInicio: Date, fechaFin: Date, idActual?: string): Promise<IPeriodoAcademico[]> {
         let query = `
             SELECT * FROM periodos
-            WHERE estado = 'activo'
-              AND (fecha_inicio <= $2 AND fecha_fin >= $1)
+            WHERE estado = $1
+            AND (fecha_inicio <= $3 AND fecha_fin >= $2)
         `;
-        const values: any[] = [fechaInicio, fechaFin];
+        const values: any[] = [EstadoPeriodo.ACTIVO, fechaInicio, fechaFin];
 
         if (idActual) {
-            query += ' AND id != $3';
+            query += ' AND id != $4';
             values.push(idActual);
         }
 
@@ -100,15 +111,15 @@ export class PostgresPeriodoAcademicoRepository implements IPeriodoRepositorio {
         return rows.map(row => this.mapear(row));
     }
 
-    private mapear(row: any): IPeriodoAcademico {
+    private mapear(row: PeriodoRow): IPeriodoAcademico {
         return {
             id: row.id,
             nombre: row.nombre,
             fechaInicio: new Date(row.fecha_inicio),
             fechaFin: new Date(row.fecha_fin),
             estado: row.estado,
-            createdAt: row.created_At,
-            updatedAt: row.updated_At,
+            createdAt: new Date(row.created_at),
+            updatedAt: new Date(row.updated_at),
         } as IPeriodoAcademico;
     };
 };

@@ -5,6 +5,7 @@ import { OfertaAcademica } from '../../../dominio/entidades/oferta-academica/Ofe
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 
 
 import { ErrorNoEncontrado, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
@@ -35,9 +36,9 @@ export class OfertarAsignaturaUseCase {
             throw new ErrorNoEncontrado (`Asignatura con ID ${asignaturaId} no encontrada.`);
         };
 
-        if (periodo.estado !== 'activo') {
+        if (periodo.estado !== EstadoPeriodo.ACTIVO) {
             throw new ErrorReglaNegocio (`El periodo ${periodo.nombre} no esta activo para crear ofertas. Estado actual: ${periodo.estado}.`);
-        };
+        };            
         
         const nuevaOferta = new OfertaAcademica(
             periodoId,
