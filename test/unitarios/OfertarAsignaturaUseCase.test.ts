@@ -77,7 +77,7 @@ describe('OfertarAsignaturaUseCase', () => {
     });
 
 
-    // TEST 1: Caso de Éxito
+    // TEST 1: Caso de Exito
     it('debe crear una Oferta Académica si todas las entidades existen y son válidas', async () => {
 
         const resultado = await ofertarAsignaturaUseCase.ejecutar(dtoValido);
@@ -88,7 +88,7 @@ describe('OfertarAsignaturaUseCase', () => {
         expect(resultado.getProgramaId()).toBe(mockOfertaCreada.getProgramaId());
     });
 
-    // TEST 5: Error - Periodo Académico NO ACTIVO
+    // TEST 5: Error - Periodo Academico NO ACTIVO
     it('debe lanzar ErrorReglaNegocio si el Periodo Académico no está en estado ACTIVO', async () => {
         const mockPeriodoInactivo = { 
             id: 'periodo-uuid-inactivo', 
