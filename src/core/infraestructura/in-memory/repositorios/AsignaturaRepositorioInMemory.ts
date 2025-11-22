@@ -1,46 +1,61 @@
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
+import { Asignatura } from '../../../dominio/entidades/asignatura/Asignatura.js';
 
 export class AsignaturaRepositorioInMemory implements IAsignaturaRepositorio {
-    private asignaturas: Map<number, IAsignatura>;
+    private asignaturas: Asignatura[] = []; 
+    private nextId = 1;
 
-    constructor() {
-        this.asignaturas = new Map<number, IAsignatura>();
-    }
-    /**
-     * Guarda una Asignatura.
-     * @param asignatura
-     * @returns
-     */
     async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
         const id = asignatura.getId();
-        if (id === undefined || id === null) {
-            throw new Error('La asignatura debe tener un ID para ser guardada.');
-        }
+        const index = this.asignaturas.findIndex(a => a.getId() === id);
 
-        this.asignaturas.set(id, asignatura);
-        return asignatura;
+        if (id && index !== -1) {
+
+            this.asignaturas.splice(index, 1); 
+            
+            this.asignaturas.push(asignatura as Asignatura);
+            return asignatura;
+            
+        } else if (id && index === -1) {
+
+            this.asignaturas.push(asignatura as Asignatura);
+            
+            if (id >= this.nextId) {
+                this.nextId = id + 1;
+            }
+            return asignatura;
+            
+        } else {
+            const nuevoId = this.nextId++;
+            
+            const nueva = new Asignatura(
+                asignatura.getNombre(),
+                asignatura.getCargaHoraria(),
+                asignatura.getTipo(),
+                nuevoId,
+                asignatura.getFechaCreacion(),
+                asignatura.getFechaActualizacion()
+            );
+            this.asignaturas.push(nueva);
+            return nueva;
+        }
     }
 
-    /**
-     * Obtiene una Asignatura por su ID.
-     * @param id
-     * @returns
-     */
     async obtenerPorId(id: number): Promise<IAsignatura | null> {
-        return this.asignaturas.get(id) || null;
-    };
+        return this.asignaturas.find(a => a.getId() === id) || null;
+    }
 
-    // Metodos stubs para completar la interfaz que no son necesarios para este test
     async obtenerTodos(): Promise<IAsignatura[]> {
-        return Array.from(this.asignaturas.values());
-    };
+        return this.asignaturas;
+    }
 
     async eliminar(id: number): Promise<void> {
-        this.asignaturas.delete(id);
-    };
+        this.asignaturas = this.asignaturas.filter(a => a.getId() !== id);
+    }
 
     async obtenerPorNombre(nombre: string): Promise<IAsignatura | null> {
-        throw new Error("Metodo no implementado.");
-    };
-};
+        const nombreLower = nombre.trim().toLowerCase();
+        return this.asignaturas.find(a => a.getNombre().toLowerCase() === nombreLower) || null;
+    }
+}
