@@ -5,7 +5,7 @@ import { IPeriodoRepositorio } from '../../src/core/dominio/interfaces/repositor
 import { IOfertaAcademicaRepositorio } from '../../src/core/dominio/interfaces/IOfertaAcademica.js';
 import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../src/core/errores/errorAplicacion.js';
 
-// Mocks de Repositorios
+// Mocks de Repositorios.
 const mockProgramaRepo: Partial<IProgramaAcademicoRepositorio> = {
     obtenerPorId: jest.fn(),
 };
