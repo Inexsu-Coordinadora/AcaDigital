@@ -5,7 +5,7 @@ import { DefinirPlanEstudioDTO } from "../dtos/DefinirPlanEstudioDTO.js";
 import { IProgramaAcademicoRepositorio } from "../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js";
 import { IAsignaturaRepositorio } from "../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js";
 
-import { ErrorNoEncontrado, ErrorConflicto, ErrorAplicacion } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../../errores/errorAplicacion.js';
 
 export class DefinirPlanEstudioUseCase {
     constructor(
@@ -20,8 +20,11 @@ export class DefinirPlanEstudioUseCase {
         try {
             plan = new PlanEstudio(dto);
         } catch (error) {
+            if (error instanceof ErrorAplicacion) {
+                throw error;
+            };
             if (error instanceof Error) {
-                throw new ErrorAplicacion(error.message, 'Error al crear el plan de estudio');
+                throw new ErrorValidacion(error.message);
             };
             throw error;
         };
@@ -43,7 +46,7 @@ export class DefinirPlanEstudioUseCase {
         if (esDuplicado) {
             throw new ErrorConflicto('La asignatura ya esta registrada en este programa');
         };
-
+        
         return await this.planRepo.guardar(plan);
     };
 };

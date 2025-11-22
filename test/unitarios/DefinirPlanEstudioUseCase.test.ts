@@ -2,6 +2,7 @@ import { DefinirPlanEstudioUseCase } from '../../src/core/aplicaciones/plan-estu
 import { IProgramaAcademicoRepositorio } from '../../src/core/dominio/interfaces//repositorio/IProgramaAcademicoRepositorio.js';
 import { IAsignaturaRepositorio } from '../../src/core/dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 import { IPlanEstudioRepositorio } from '../../src/core/dominio/interfaces/repositorio/IPlanEstudioRepositorio.js';
+import { PlanEstudio } from '../../src/core/dominio/entidades/plan-estudio/PlanEstudio.js';
 
 import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../src/core/errores/errorAplicacion.js';
 
@@ -105,9 +106,36 @@ describe('DefinirPlanEstudioUseCase', () => {
         await expect(definirPlanEstudioUseCase.ejecutar(dtoInvalido)).rejects.toThrow(
             ErrorAplicacion
         );
-        
+
         expect(mockProgramaRepository.obtenerPorId).not.toHaveBeenCalled();
         expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
     });
 
+    // Test 6: Caso de error de infraestructura al guardar
+    it('deberia propagar cualquier Error de la base de datos al guardar', async () => {
+        const errorDB = new Error('Fallo de conexión a la base de datos');
+        (mockPlanEstudioRepository.guardar as jest.Mock).mockRejectedValue(errorDB);
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
+            errorDB
+        );
+    });
+
+    // Test 7: Caso de error de regla de negocio semestre no entero
+    it('deberia lanzar un ErrorValidacion si el semestre/nivel no es un entero', async () => {
+        const dtoInvalido = {
+            ...dtoValido,
+            semestreNivel: 3.5,
+        };
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoInvalido)).rejects.toThrow(
+            ErrorValidacion
+        );
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoInvalido)).rejects.toThrow(
+            'El semestre/nivel debe ser un entero positivo'
+        );
+
+        expect(mockProgramaRepository.obtenerPorId).not.toHaveBeenCalled();
+        expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
+    });
 });
