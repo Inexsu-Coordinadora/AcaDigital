@@ -1,44 +1,30 @@
-import { IPlanEstudioRepositorio } from "../../../../core/dominio/interfaces/repositorio/IPlanEstudioRepositorio.js";
-import { PlanEstudio } from "../../../../core/dominio/entidades/plan-estudio/PlanEstudio.js";
+import type { IPlanEstudioRepositorio } from '../../../dominio/interfaces/repositorio/IPlanEstudioRepositorio.js';
+import type { IPlanEstudio } from '../../../dominio/interfaces/IPlanEstudio.js';
 
 export class PlanEstudioRepositorioInMemory implements IPlanEstudioRepositorio {
-    private planes: Map<string, PlanEstudio>;
-
-    constructor(initialData: PlanEstudio[] = []) {
-        this.planes = new Map();
-        initialData.forEach(plan => {
-            this.planes.set(`${plan.programaId}-${plan.asignaturaId}`, plan);
-        });
+    private planes: Map<string, Map<number, IPlanEstudio>>;
+    
+    constructor() {
+        this.planes = new Map<string, Map<number, IPlanEstudio>>();
     };
 
     async existeVinculo(programaId: string, asignaturaId: number): Promise<boolean> {
-        const key = `${programaId}-${asignaturaId}`;
-        return this.planes.has(key);
+        const asignaturasDelPrograma = this.planes.get(programaId);
+        if (!asignaturasDelPrograma) {
+            return false;
+        };
+        return asignaturasDelPrograma.has(asignaturaId);
     };
 
-    async guardar(plan: PlanEstudio): Promise<PlanEstudio> {
-        const key = `${plan.programaId}-${plan.asignaturaId}`;
+    async guardar(plan: IPlanEstudio): Promise<IPlanEstudio> {
+        let asignaturasDelPrograma = this.planes.get(plan.programaId);
+        
+        if (!asignaturasDelPrograma) {
+            asignaturasDelPrograma = new Map<number, IPlanEstudio>();
+            this.planes.set(plan.programaId, asignaturasDelPrograma);
+        };
 
-        const planGuardado = {
-            ...plan,
-            id: plan.asignaturaId || `plan-${this.planes.size + 1}`,
-            createdAt: plan.createdAt || new Date(),
-            updatedAt: new Date()
-        } as PlanEstudio;
-
-        this.planes.set(key, planGuardado);
-        return planGuardado;
+        asignaturasDelPrograma.set(plan.asignaturaId, plan);
+        return plan;
     };
-
-    async obtenerPorId(id: string): Promise<PlanEstudio | null> {
-        return Array.from(this.planes.values()).find(p => Number(p.asignaturaId) === Number(id)) || null;
-    };
-
-    async obtenerPlanesPorPrograma(programaId: string): Promise<PlanEstudio[]> {
-        return Array.from(this.planes.values()).filter(p => p.programaId === programaId);
-    };
-    
-    async obtenerTodos(): Promise<PlanEstudio[]> { return Array.from(this.planes.values()); }
-    async actualizar(plan: PlanEstudio): Promise<PlanEstudio> { throw new Error("Metodo no implementado."); }
-    async eliminar(planId: string): Promise<void> { this.planes.delete(planId); }
-}
+};

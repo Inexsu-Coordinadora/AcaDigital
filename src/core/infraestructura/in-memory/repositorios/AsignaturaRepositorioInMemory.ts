@@ -1,20 +1,46 @@
-import { IAsignaturaRepositorio } from "../../../../core/dominio/interfaces/repositorio/IAsignaturaRepositorio.js";
-import { Asignatura } from "../../../../core/dominio/entidades/asignatura/Asignatura.js";
+import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
+import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 
 export class AsignaturaRepositorioInMemory implements IAsignaturaRepositorio {
-    private asignaturas: Map<number, Asignatura>;
+    private asignaturas: Map<number, IAsignatura>;
 
-    constructor(initialData: Asignatura[] = []) {
-        this.asignaturas = new Map(initialData.map(a => [a.getId(), a]));
-    };
+    constructor() {
+        this.asignaturas = new Map<number, IAsignatura>();
+    }
+    /**
+     * Guarda una Asignatura.
+     * @param asignatura
+     * @returns
+     */
+    async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
+        const id = asignatura.getId();
+        if (id === undefined || id === null) {
+            throw new Error('La asignatura debe tener un ID para ser guardada.');
+        }
 
-    async obtenerPorId(id: number): Promise<Asignatura | null> {
+        this.asignaturas.set(id, asignatura);
+        return asignatura;
+    }
+
+    /**
+     * Obtiene una Asignatura por su ID.
+     * @param id
+     * @returns
+     */
+    async obtenerPorId(id: number): Promise<IAsignatura | null> {
         return this.asignaturas.get(id) || null;
     };
 
-    async guardar(asignatura: any): Promise<any> { return asignatura; }
-    async obtenerTodos(): Promise<any[]> { return Array.from(this.asignaturas.values()); }
-    async actualizar(id: number, dto: any): Promise<any> { throw new Error("Metodo no implementado."); }
-    async eliminar(id: number): Promise<void> { this.asignaturas.delete(id); }
-    async obtenerPorNombre(nombre: string): Promise<Asignatura | null> { throw new Error("Metodo no implementado."); }
+    // Metodos stubs para completar la interfaz que no son necesarios para este test
+    async obtenerTodos(): Promise<IAsignatura[]> {
+        return Array.from(this.asignaturas.values());
+    };
+
+    async eliminar(id: number): Promise<void> {
+        this.asignaturas.delete(id);
+    };
+
+    async obtenerPorNombre(nombre: string): Promise<IAsignatura | null> {
+        throw new Error("Metodo no implementado.");
+    };
 };
