@@ -1,4 +1,5 @@
 import type { IOfertaAcademica } from '../../interfaces/IOfertaAcademica.js';
+import { ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
 
 export class OfertaAcademica implements IOfertaAcademica {
     private id: number;
@@ -21,7 +22,7 @@ export class OfertaAcademica implements IOfertaAcademica {
         fechaActualizacion?: Date,
     ) {
         if (cupoDisponible <= 0) {
-            throw new Error("400: El cupo disponible debe ser mayor que cero.");
+            throw new ErrorReglaNegocio("El cupo disponible debe ser mayor que cero.");
         }
         
         this.periodoId = periodoId;
