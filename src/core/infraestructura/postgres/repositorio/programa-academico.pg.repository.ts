@@ -10,7 +10,7 @@ interface ProgramaAcademicoRow {
     id: string;
     nombre: string;
     descripcion: string;
-    nivel: string;
+    nivelEducativo: string;
     modalidad: string;
     duracion_valor: number;
     duracion_unidad: string;
@@ -27,13 +27,13 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         `;
         
         const values = [
-            programa.getId(),
-            programa.getNombre(),
-            programa.getDescripcion(),
-            programa.getNivelEducativo(),
-            programa.getModalidad(),
-            programa.getDuracion().getValor(),
-            programa.getDuracion().getUnidad()
+            programa.id,
+            programa.nombre,
+            programa.descripcion,
+            programa.nivelEducativo,
+            programa.modalidad,
+            programa.duracion.valor,
+            programa.duracion.unidad
         ];
 
         const result: QueryResult = await pool.query(query, values); 
@@ -78,8 +78,8 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         `;
         
         const values = [
-            programa.getNombre(),
-            programa.getDescripcion(),
+            programa.nombre,
+            programa.descripcion,
             id
         ];
 
@@ -107,7 +107,7 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         return new ProgramaAcademico(
             row.nombre,
             row.descripcion,
-            row.nivel as NivelEducativo,
+            row.nivelEducativo as NivelEducativo,
             row.modalidad as Modalidad,
             duracion,
             row.id

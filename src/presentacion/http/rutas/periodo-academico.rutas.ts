@@ -48,11 +48,20 @@ export function registerPeriodoAcademicoRoutes(
     });
 
     // GET/id
-    server.get<{ Params: Params }>('/:id', async (req, reply) => {
-        const id = req.params.id;
-        const resultado = await obtenerPorId.ejecutar(id);
-        if (!resultado) return reply.code(404).send({ error: 'No encontrado' });
-        reply.send(resultado);
+server.get<{ Params: Params }>('/:id', async (req, reply) => {
+        try { 
+            const id = req.params.id;
+            const resultado = await obtenerPorId.ejecutar(id);
+            
+            if (!resultado) {
+                return reply.code(404).send({ error: 'No encontrado' });
+            }
+            
+            reply.send(resultado);
+            
+        } catch (error: any) {
+            reply.code(400).send({ error: error.message }); 
+        }
     });
 
     // PUT 

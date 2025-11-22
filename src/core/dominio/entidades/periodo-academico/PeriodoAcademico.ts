@@ -21,9 +21,17 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         createdAt?: Date;
         updatedAt?: Date;
     }){
+        const fechaInicioValida = !isNaN(props.fechaInicio.getTime());
+        const fechaFinValida = !isNaN(props.fechaFin.getTime());
+
+        if (!fechaInicioValida || !fechaFinValida) {
+            throw new Error("400: Las fechas de inicio o fin del período no son objetos Date válidos.");
+        }
+
         if (props.fechaFin <= props.fechaInicio) {
             throw new Error("La fecha de fin debe ser posterior a la fecha de inicio.");
         }
+
         this.id = props.id || randomUUID();
         this.nombre = props.nombre;
         this.fechaInicio = props.fechaInicio;
@@ -53,5 +61,9 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         }
         this.estado = EstadoPeriodo.CERRADO;
         this.updatedAt = new Date();
+    }
+
+    public puedeOfertarAsignaturas(): boolean {
+        return this.estado === EstadoPeriodo.ACTIVO;
     }
 }
