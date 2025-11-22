@@ -6,13 +6,13 @@ export enum TipoAsignatura {
     MIXTA = "mixta",
 }
 
-export class Asignatura implements IAsignatura {
-    private readonly id: number;
-    private nombre: string;
-    private cargaHoraria: number;
-    private tipo: TipoAsignatura;
-    private readonly fechaCreacion: Date;
-    private fechaActualizacion: Date;
+export class Asignatura {
+private readonly _id: number; 
+    private _nombre: string; 
+    private _cargaHoraria: number; 
+    private _tipo: TipoAsignatura; 
+    private readonly _fechaCreacion: Date; 
+    private _fechaActualizacion: Date;
 
     constructor(
         nombre: string,
@@ -28,21 +28,21 @@ export class Asignatura implements IAsignatura {
         if (cargaHoraria <= 0) {
             throw new Error('La carga horaria debe ser un valor positivo (AC3).');
         }
-
-        this.id = id || 0;
-        this.nombre = nombre.trim();
-        this.cargaHoraria = cargaHoraria;
-        this.tipo = tipo;
-        this.fechaCreacion = fechaCreacion || new Date();
-        this.fechaActualizacion = fechaActualizacion || new Date();
+        
+        this._id = id || 0;
+        this._nombre = nombre.trim();
+        this._cargaHoraria = cargaHoraria;
+        this._tipo = tipo;
+        this._fechaCreacion = fechaCreacion || new Date();
+        this._fechaActualizacion = fechaActualizacion || new Date();
     }
 
-    public getId(): number { return this.id; }
-    public getNombre(): string { return this.nombre; }
-    public getCargaHoraria(): number { return this.cargaHoraria; }
-    public getTipo(): TipoAsignatura { return this.tipo; }
-    public getFechaCreacion(): Date { return this.fechaCreacion; }
-    public getFechaActualizacion(): Date { return this.fechaActualizacion; }
+    public get id(): number { return this._id; }
+    public get nombre(): string { return this._nombre; }
+    public get cargaHoraria(): number { return this._cargaHoraria; }
+    public get tipo(): TipoAsignatura { return this._tipo; }
+    public get fechaCreacion(): Date { return this._fechaCreacion; }
+    public get fechaActualizacion(): Date { return this._fechaActualizacion; }
 
     public actualizarInformacion(
         nuevoNombre: string,
@@ -56,9 +56,9 @@ export class Asignatura implements IAsignatura {
             throw new Error('La nueva carga horaria debe ser un valor positivo.');
         }
 
-        this.nombre = nuevoNombre.trim();
-        this.cargaHoraria = nuevaCargaHoraria;
-        this.tipo = nuevoTipo;
-        this.fechaActualizacion = new Date();
+        this._nombre = nuevoNombre.trim();
+        this._cargaHoraria = nuevaCargaHoraria;
+        this._tipo = nuevoTipo;
+        this._fechaActualizacion = new Date();
     }
 }

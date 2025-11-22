@@ -4,13 +4,15 @@ import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcad
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { ActualizarPeriodoDTO } from '../dtos/ActualizarPeriodoDTO.js';
 
+import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+
 export class ActualizarPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };
 
     async ejecutar(id: string, input: ActualizarPeriodoDTO): Promise<IPeriodoAcademico> {
         const periodoProps = await this.repo.obtenerPorId(id);
         if (!periodoProps) {
-            throw new Error('Periodo no encontrado');
+            throw new ErrorNoEncontrado ('Periodo no encontrado');
         };
 
         const periodoEntidad = new PeriodoAcademico(periodoProps);
@@ -18,7 +20,7 @@ export class ActualizarPeriodoUseCase {
         // Validaciones
         if (input.nombre && input.nombre !== periodoEntidad.nombre) {
             const existe = await this.repo.obtenerPorNombre(input.nombre);
-            if (existe) throw new Error('Nombre ya en uso');
+            if (existe) throw new ErrorConflicto ('Nombre ya en uso');
             periodoEntidad.nombre = input.nombre;
         };
 
@@ -26,7 +28,7 @@ export class ActualizarPeriodoUseCase {
         const nuevaFechaFin = input.fechaFin ? new Date(input.fechaFin) : periodoEntidad.fechaFin;
 
         if (nuevaFechaFin <= nuevaFechaInicio) {
-            throw new Error('La fecha de fin debe ser posterior a la fecha de inicio.');
+            throw new ErrorReglaNegocio ('La fecha de fin debe ser posterior a la fecha de inicio.');
         }
 
         periodoEntidad.fechaInicio = nuevaFechaInicio;
@@ -38,7 +40,7 @@ export class ActualizarPeriodoUseCase {
             } else if (input.estado === EstadoPeriodo.CERRADO) {
                 periodoEntidad.cerrar();
             } else if (input.estado === EstadoPeriodo.INACTIVO) {
-                throw new Error('Transición de estado inválida: no se puede pasar a "inactivo" directamente.');
+                throw new ErrorReglaNegocio ('Transicion de estado invalida: no se puede pasar a "inactivo" directamente.');
             }
         }
 
@@ -49,7 +51,7 @@ export class ActualizarPeriodoUseCase {
                 periodoEntidad.id
             );
             if (periodosTraslapados && periodosTraslapados.length > 0) {
-                throw new Error('El período se solapa con otro período activo existente.');
+                throw new ErrorConflicto ('El periodo se solapa con otro periodo activo existente.');
             }
         }
 

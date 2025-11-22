@@ -34,11 +34,11 @@ export class OfertaAcademicaPGRepositorio implements IOfertaAcademicaRepositorio
             RETURNING *;
         `;
         const valores = [
-            oferta.getPeriodoId(),
-            oferta.getProgramaId(),
-            oferta.getAsignaturaId(),
-            oferta.getGrupo(),
-            oferta.getCupoDisponible()
+            oferta.periodoId,
+            oferta.programaId,
+            oferta.asignaturaId,
+            oferta.grupo,
+            oferta.cupoDisponible
         ];
         
         try {
