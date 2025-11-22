@@ -65,7 +65,7 @@ describe('DefinirPlanEstudioUseCase', () => {
         (mockProgramaRepository.obtenerPorId as jest.Mock).mockResolvedValue(null);
 
         await expect(definirPlanEstudioUseCase.ejecutar(dtoValido)).rejects.toThrow(
-            ErrorAplicacion 
+            ErrorAplicacion
         );
 
         expect(mockAsignaturaRepository.obtenerPorId).not.toHaveBeenCalled();
@@ -91,6 +91,22 @@ describe('DefinirPlanEstudioUseCase', () => {
             ErrorAplicacion
         );
         expect(mockPlanEstudioRepository.existeVinculo).toHaveBeenCalledWith(dtoValido.programaId, dtoValido.asignaturaId);
+        expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
+    });
+
+    // Test 5: Caso de error de regla de negocio semestre o creditos negativos
+    it('deberia lanzar un ErrorAplicacion si el semestre o los creditos son cero o negativos', async () => {
+        const dtoInvalido = {
+            ...dtoValido,
+            semestreNivel: 0,
+            creditosCarga: 4,
+        };
+
+        await expect(definirPlanEstudioUseCase.ejecutar(dtoInvalido)).rejects.toThrow(
+            ErrorAplicacion
+        );
+        
+        expect(mockProgramaRepository.obtenerPorId).not.toHaveBeenCalled();
         expect(mockPlanEstudioRepository.guardar).not.toHaveBeenCalled();
     });
 
