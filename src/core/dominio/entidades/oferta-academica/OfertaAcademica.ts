@@ -1,12 +1,15 @@
-export class OfertaAcademica {
-    private _id: number;
-    private _periodoId: string;
-    private _programaId: string;
-    private _asignaturaId: number;
-    private _grupo: string;
-    private _cupoDisponible: number;
-    private _fechaCreacion: Date;
-    private _fechaActualizacion: Date;
+import type { IOfertaAcademica } from '../../interfaces/IOfertaAcademica.js';
+import { ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+
+export class OfertaAcademica implements IOfertaAcademica {
+    private id: number;
+    private periodoId: string;
+    private programaId: string;
+    private asignaturaId: number;
+    private grupo: string;
+    private cupoDisponible: number;
+    private fechaCreacion: Date;
+    private fechaActualizacion: Date;
 
     constructor(
         periodoId: string,
@@ -19,7 +22,7 @@ export class OfertaAcademica {
         fechaActualizacion?: Date,
     ) {
         if (cupoDisponible <= 0) {
-            throw new Error("400: El cupo disponible debe ser mayor que cero.");
+            throw new ErrorReglaNegocio("El cupo disponible debe ser mayor que cero.");
         }
         
         this._periodoId = periodoId;

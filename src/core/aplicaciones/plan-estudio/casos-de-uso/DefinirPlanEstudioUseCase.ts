@@ -5,7 +5,7 @@ import { DefinirPlanEstudioDTO } from "../dtos/DefinirPlanEstudioDTO.js";
 import { IProgramaAcademicoRepositorio } from "../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js";
 import { IAsignaturaRepositorio } from "../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js";
 
-import { ErrorNoEncontrado, ErrorConflicto } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../../errores/errorAplicacion.js';
 
 export class DefinirPlanEstudioUseCase {
     constructor(
@@ -15,15 +15,28 @@ export class DefinirPlanEstudioUseCase {
     ) { };
 
     async ejecutar(dto: DefinirPlanEstudioDTO): Promise<PlanEstudio> {
+        let plan: PlanEstudio;
 
+        try {
+            plan = new PlanEstudio(dto);
+        } catch (error) {
+            if (error instanceof ErrorAplicacion) {
+                throw error;
+            };
+            if (error instanceof Error) {
+                throw new ErrorValidacion(error.message);
+            };
+            throw error;
+        };
+        
         const programa = await this.programaRepo.obtenerPorId(dto.programaId);
         if (!programa) {
-            throw new ErrorNoEncontrado ('Programa academico no encontrado');
+            throw new ErrorNoEncontrado('Programa academico no encontrado');
         };
 
         const asignatura = await this.asignaturaRepo.obtenerPorId(dto.asignaturaId);
         if (!asignatura) {
-            throw new ErrorNoEncontrado ('Asignatura no encontrada');
+            throw new ErrorNoEncontrado('Asignatura no encontrada');
         };
 
         const esDuplicado = await this.planRepo.existeVinculo(
@@ -31,10 +44,9 @@ export class DefinirPlanEstudioUseCase {
             dto.asignaturaId
         );
         if (esDuplicado) {
-            throw new ErrorConflicto ('La asignatura ya esta registrada en este programa');
+            throw new ErrorConflicto('La asignatura ya esta registrada en este programa');
         };
-
-        const plan = new PlanEstudio(dto);
+        
         return await this.planRepo.guardar(plan);
     };
 };
