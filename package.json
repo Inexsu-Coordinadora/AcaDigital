@@ -8,7 +8,6 @@
     "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
     "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
     "start": "node dist/server.js",
-
     "test": "jest",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=./src/core/aplicaciones/.*",
@@ -26,6 +25,8 @@
   },
   "homepage": "https://github.com/OscarCalle0/AcaDigital#readme",
   "dependencies": {
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.3",
     "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
     "pg": "^8.16.3",
