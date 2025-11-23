@@ -76,6 +76,34 @@ describe('UNITARIO: Entidad ProgramaAcademico', () => {
         
         expect(() => programa.actualizarInfoGeneral(nombreValido, '')).toThrow(Error);
     });
+        // Tests para la clase Duracion
+    describe('Objeto de Valor Duracion', () => {
 
+        // Test 8: caso de error de duracion invalida
+        it('deberia lanzar Error si el valor de la duracion es cero o negativo', () => {
+            expect(() => new Duracion(0, 'meses')).toThrow('El valor de la duracion debe ser positivo');
+            expect(() => new Duracion(-5, 'semestres')).toThrow('El valor de la duracion debe ser positivo');
+        });
+
+        // Test 9: caso de error de unidad de duracion invalida
+        it('deberia lanzar Error si la unidad de duracion es invalida', () => {
+            const unidadInvalida = 'periodos';
+            
+            expect(() => new Duracion(8, unidadInvalida)).toThrow(`La unidad de duracion debe ser una de: ${UNIDADES_DURACION_VALIDAS.join(', ')}`);
+        });
+        
+        // Test 10: caso de uso toString
+        it('deberia retornar el valor y la unidad como una cadena de texto', () => {
+            const duracion = new Duracion(10, 'semestres');
+            expect(duracion.toString()).toBe('10 semestres');
+        });
+
+        // Test 11: caso de uso getValor y getUnidad
+        it('deberia obtener sus valores (getValor y getUnidad)', () => {
+            const duracion = new Duracion(4, 'años');
+            expect(duracion.getValor()).toBe(4);
+            expect(duracion.getUnidad()).toBe('años');
+        });
+    });
 
 });
