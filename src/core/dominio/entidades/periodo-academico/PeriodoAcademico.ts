@@ -17,7 +17,7 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         nombre: string;
         fechaInicio: Date;
         fechaFin: Date;
-        estado?: EstadoPeriodo;
+        estado?: EstadoPeriodo | string;
         createdAt?: Date;
         updatedAt?: Date;
     }){
@@ -36,7 +36,15 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         this.nombre = props.nombre;
         this.fechaInicio = props.fechaInicio;
         this.fechaFin = props.fechaFin;
-        this.estado = props.estado || EstadoPeriodo.INACTIVO;
+        // Allow tests to pass string literals like 'inactivo' by coercing to EstadoPeriodo
+        let estadoValor: EstadoPeriodo;
+        if (typeof props.estado === 'string') {
+            const val = props.estado as EstadoPeriodo;
+            estadoValor = Object.values(EstadoPeriodo).includes(val) ? val : EstadoPeriodo.INACTIVO;
+        } else {
+            estadoValor = props.estado ?? EstadoPeriodo.INACTIVO;
+        }
+        this.estado = estadoValor;
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
     }

@@ -1,5 +1,5 @@
 import { CrearPeriodoUseCase } from '../../src/core/aplicaciones/periodo-academico/casos-de-uso/CrearPeriodoUseCase.js';
-import { ErrorConflicto, ErrorReglaNegocio } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorReglaNegocio } from '../../src/core/errores/ErrorAplicacion.js';
 import { PeriodoAcademicoRepositorioInMemory } from '../../src/core/infraestructura/in-memory/repositorios/PeriodoAcademicoRepositorioInMemory.js';
 
 let periodoRepo: PeriodoAcademicoRepositorioInMemory;

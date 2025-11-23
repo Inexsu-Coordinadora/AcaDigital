@@ -1,6 +1,6 @@
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 
-import { ErrorNoEncontrado } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado } from '../../../errores/ErrorAplicacion.js';
 
 export class EliminarPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };

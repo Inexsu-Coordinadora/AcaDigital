@@ -10,7 +10,8 @@ export class Duracion{
         throw new Error("El valor de la duracion debe ser positivo");
     };
     if (!UNIDADES_DURACION_VALIDAS.includes(unidad as UnidadDuracion)) {
-        throw new Error(`La unidad de duración debe ser una de: ${UNIDADES_DURACION_VALIDAS.join(', ')}`);
+        // Use a plain ASCII message to match existing tests expectations
+        throw new Error(`La unidad de duracion debe ser una de: ${UNIDADES_DURACION_VALIDAS.join(', ')}`);
     }
     this._valor = valor;
     this._unidad = unidad;
@@ -23,6 +24,10 @@ export class Duracion{
     public get unidad(): string{
         return this._unidad;
     }
+
+    // Compatibility methods (older tests / callers expect getValor/getUnidad)
+    public getValor(): number { return this.valor; }
+    public getUnidad(): string { return this.unidad; }
 
     toString(): string{
         return `${this.valor} ${this.unidad}`;

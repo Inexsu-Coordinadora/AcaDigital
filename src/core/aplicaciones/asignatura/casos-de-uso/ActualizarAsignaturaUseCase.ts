@@ -3,7 +3,7 @@ import type { ActualizarAsignaturaDTO } from '../dtos/ActualizarAsignaturaDTO.js
 import { TipoAsignatura } from '../../../dominio/entidades/asignatura/Asignatura.js';
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 
-import { ErrorNoEncontrado, ErrorConflicto } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto } from '../../../errores/ErrorAplicacion.js';
 
 export class ActualizarAsignaturaUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) { }

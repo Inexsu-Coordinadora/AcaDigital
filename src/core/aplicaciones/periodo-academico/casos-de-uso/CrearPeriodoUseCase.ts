@@ -3,7 +3,7 @@ import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcad
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { CrearPeriodoDTO } from '../dtos/CrearPeriodoDTO.js';
 
-import { ErrorConflicto, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorReglaNegocio } from '../../../errores/ErrorAplicacion.js';
 
 export class CrearPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };

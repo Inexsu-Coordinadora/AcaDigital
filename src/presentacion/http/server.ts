@@ -45,7 +45,7 @@ import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgre
 import rutasOfertaAcademica from './rutas/oferta-academica.rutas.js';
 
 // errores
-import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../core/errores/errorAplicacion.js';
+import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../core/errores/ErrorAplicacion.js';
 
 
 // --- Inyección de Dependencias Manual ---

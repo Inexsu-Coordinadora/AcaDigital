@@ -3,7 +3,7 @@ import { IProgramaAcademicoRepositorio } from '../../src/core/dominio/interfaces
 import { IAsignaturaRepositorio } from '../../src/core/dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 import { IPeriodoRepositorio } from '../../src/core/dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import { IOfertaAcademicaRepositorio } from '../../src/core/dominio/interfaces/IOfertaAcademica.js';
-import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../src/core/errores/ErrorAplicacion.js';
 
 // Mocks de Repositorios.
 const mockProgramaRepo: Partial<IProgramaAcademicoRepositorio> = {
@@ -41,6 +41,14 @@ const mockOfertaCreada = {
     getCupoDisponible: () => 30,
     getFechaCreacion: () => new Date(),
     getFechaActualizacion: () => new Date(),
+    // also include plain properties so assertions that access properties work
+    periodoId: 'periodo-uuid-activo',
+    programaId: 'prog-uuid-1',
+    asignaturaId: 101,
+    grupo: 'A',
+    cupoDisponible: 30,
+    fechaCreacion: new Date(),
+    fechaActualizacion: new Date(),
 };
 
 const dtoValido = {
@@ -88,7 +96,7 @@ describe('OfertarAsignaturaUseCase', () => {
         expect(mockOfertaRepo.buscarPorClaveUnica).toHaveBeenCalledTimes(1);
         expect(mockOfertaRepo.guardar).toHaveBeenCalledTimes(1);
 
-        expect(resultado.getProgramaId()).toBe(mockOfertaCreada.getProgramaId());
+        expect(resultado.programaId).toBe(mockOfertaCreada.getProgramaId());
     });
 
 

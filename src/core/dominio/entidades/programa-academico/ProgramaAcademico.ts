@@ -43,6 +43,14 @@ export class ProgramaAcademico {
     public get modalidad(): Modalidad { return this._modalidad; }
     public get duracion(): Duracion { return this._duracion; }
 
+  // Backwards-compatible method names expected by tests / older callers
+  public getId(): string { return this.id; }
+  public getNombre(): string { return this.nombre; }
+  public getDescripcion(): string { return this.descripcion; }
+  public getNivelEducativo(): NivelEducativo { return this.nivelEducativo; }
+  public getModalidad(): Modalidad { return this.modalidad; }
+  public getDuracion(): Duracion { return this.duracion; }
+
   public actualizarInfoGeneral(nuevoNombre: string, nuevaDescripcion: string): void {
     if (!nuevoNombre || nuevoNombre.trim().length === 0) {
       throw new Error('El nuevo nombre del programa académico es obligatorio.');

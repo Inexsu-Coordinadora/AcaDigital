@@ -8,6 +8,16 @@ export interface IOfertaAcademica {
     fechaCreacion: Date;
     fechaActualizacion: Date;
 
+    // Compatibility methods used by tests / legacy callers
+    getId?(): number;
+    getPeriodoId?(): string;
+    getProgramaId?(): string;
+    getAsignaturaId?(): number;
+    getGrupo?(): string;
+    getCupoDisponible?(): number;
+    getFechaCreacion?(): Date;
+    getFechaActualizacion?(): Date;
+
 }
 export interface IOfertaAcademicaRepositorio {
     guardar(oferta: IOfertaAcademica): Promise<IOfertaAcademica>;

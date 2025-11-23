@@ -8,7 +8,7 @@ import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/reposit
 import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 
 
-import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorConflicto } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorConflicto } from '../../../errores/ErrorAplicacion.js';
 
 export class OfertarAsignaturaUseCase {
     constructor(
