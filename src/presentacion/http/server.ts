@@ -1,5 +1,8 @@
 import fastify from 'fastify';
 import { configuracion } from '../../core/config/index.js';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUI from '@fastify/swagger-ui';
+
 //periodo academico
 import {
     CrearPeriodoUseCase,
@@ -31,11 +34,12 @@ import {
     EliminarProgramaAcademicoUseCase
 } from '../../core/aplicaciones/programa-academico/index.js';
 import { PostgresProgramaAcademicoRepository } from '../../core/infraestructura/postgres/repositorio/programa-academico.pg.repository.js';
-import { registerProgramaAcademicoRoutes } from './rutas/programa-academico.rutas.js';
+import rutasProgramaAcademico from './rutas/programa-academico.rutas.js';
 
-//plan de estudio
+// Plan de Estudio 
+import rutasPlanEstudio from './rutas/plan-estudio.rutas.js';
 import {
-    DefinirPlanEstudioUseCase,
+    DefinirPlanEstudioUseCase
 } from '../../core/aplicaciones/plan-estudio/index.js';
 import { PlanEstudioPGRepository } from '../../core/infraestructura/postgres/repositorio/plan-estudio.pg.repository.js';
 
@@ -45,7 +49,7 @@ import { OfertaAcademicaPGRepositorio } from '../../core/infraestructura/postgre
 import rutasOfertaAcademica from './rutas/oferta-academica.rutas.js';
 
 // errores
-import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../core/errores/errorAplicacion.js';
+import { ErrorAplicacion } from '../../core/errores/errorAplicacion.js';
 
 
 // --- Inyección de Dependencias Manual ---
@@ -72,14 +76,13 @@ const obtenerPeriodoPorIdUseCase = new ObtenerPeriodoPorIdUseCase(periodoReposit
 const actualizarPeriodoUseCase = new ActualizarPeriodoUseCase(periodoRepository);
 const eliminarPeriodoUseCase = new EliminarPeriodoUseCase(periodoRepository);
 
-
+// PlanEstudio repos + usecase
 const planEstudioRepository = new PlanEstudioPGRepository();
 const definirPlanEstudioUseCase = new DefinirPlanEstudioUseCase(
     planEstudioRepository,
     programaRepository,
     asignaturaRepository
 );
-
 
 // Oferta Académica
 const ofertaRepositorio = new OfertaAcademicaPGRepositorio();
@@ -94,16 +97,36 @@ const ofertarAsignaturaUseCase = new OfertarAsignaturaUseCase(
 // --- Servidor Fastify ---
 export const server = fastify({ logger: true });
 
+// --- Configuración de Swagger ---
+server.register(fastifySwagger, {
+    exposeRoute: true,
+    swagger: {
+        info: {
+            title: 'API de Gestión Académica - AcaDigital',
+            description: 'Documentación de los servicios CRUD para AcaDigital.',
+            version: '1.0.0'
+        },
+    },
+} as any);
+
+server.register(fastifySwaggerUI, {
+    routePrefix: '/docs',
+    uiConfig: {
+        docExpansion: 'list',
+        deepLinking: false
+    },
+});
+
 server.setErrorHandler((error, request, reply) => {
     let statusCode = 500;
     let responseBody = {
         error: 'Error interno del servidor',
-        detalle: error.message || 'Error desconocido',
+        detalle: (error as any).message || 'Error desconocido',
         codigo: 'INTERNAL_SERVER_ERROR'
     };
 
-    if (error.code === 'FST_ERR_VALIDATION' && error.validation) {
-        const validationError: any = error.validation.find(e => e);
+    if ((error as any).code === 'FST_ERR_VALIDATION' && (error as any).validation) {
+        const validationError: any = (error as any).validation.find((e: any) => e);
         let detailMessage: string;
 
         if (validationError) {
@@ -115,7 +138,7 @@ server.setErrorHandler((error, request, reply) => {
 
         statusCode = 400;
         responseBody = {
-            error: 'Solicitud Inva lida (Validacion Schema)',
+            error: 'Solicitud Inválida (Validación Schema)',
             detalle: detailMessage,
             codigo: 'REQUEST_VALIDATION_FAILED'
         };
@@ -124,17 +147,17 @@ server.setErrorHandler((error, request, reply) => {
 
         switch (error.codigo) {
             case 'NO_ENCONTRADO':
-                statusCode = 404; // No encontrado
+                statusCode = 404;
                 break;
             case 'CONFLICTO':
-                statusCode = 409; // Conflcito
+                statusCode = 409;
                 break;
             case 'ERROR_REGLA_NEGOCIO':
             case 'ERROR_VALIDACION':
-                statusCode = 400; // Request mala
+                statusCode = 400;
                 break;
             default:
-                statusCode = 500; // Error inesperado/default
+                statusCode = 500;
                 break;
         };
 
@@ -154,7 +177,6 @@ server.setErrorHandler((error, request, reply) => {
         };
     };
 
-    // Enviar la respuesta con el formato uniforme
     return reply.code(statusCode).send(responseBody);
 });
 
@@ -162,20 +184,24 @@ server.setErrorHandler((error, request, reply) => {
 // --- Registrar Rutas ---
 
 // Programa Academico
-server.register(async (instance, options) => {
-    registerProgramaAcademicoRoutes(
-        instance,
-        crearProgramaUseCase,
-        listarProgramasUseCase,
-        obtenerProgramaPorIdUseCase,
-        actualizarProgramaUseCase,
-        eliminarProgramaUseCase,
+server.register(rutasProgramaAcademico, {
+    prefix: '/api/v1/programas-academicos',
+    dependencies: {
+        crearProgramaAcademicoUseCase: crearProgramaUseCase,
+        listarProgramasAcademicosUseCase: listarProgramasUseCase,
+        obtenerProgramaAcademicoUseCase: obtenerProgramaPorIdUseCase,
+        actualizarProgramaAcademicoUseCase: actualizarProgramaUseCase,
+        eliminarProgramaAcademicoUseCase: eliminarProgramaUseCase,
+    }
+} as any);
 
-        definirPlanEstudioUseCase
-
-    );
-}, { prefix: '/api/v1/programas-academicos' });
-
+// Rutas Plan de Estudio 
+server.register(rutasPlanEstudio, {
+    prefix: '/api/v1/planes-estudio',
+    dependencies: {
+        definirPlanEstudioUseCase,
+    }
+} as any);
 
 // Asignatura 
 server.register(rutasAsignatura, {
@@ -187,7 +213,7 @@ server.register(rutasAsignatura, {
         actualizarAsignaturaUseCase,
         eliminarAsignaturaUseCase,
     }
-});
+} as any);
 
 // Periodo Academico
 server.register(async (instance, options) => {
@@ -201,14 +227,13 @@ server.register(async (instance, options) => {
     );
 }, { prefix: '/api/v1/periodos' });
 
-
 // Oferta Académica
 server.register(rutasOfertaAcademica, {
     prefix: '/api/v1/ofertas',
     dependencies: {
         ofertarAsignaturaUseCase,
     }
-});
+} as any);
 
 
 // --- Iniciar el Servidor ---
@@ -224,4 +249,4 @@ export const start = async () => {
 
 if (import.meta.main) {
     start();
-};
+}
