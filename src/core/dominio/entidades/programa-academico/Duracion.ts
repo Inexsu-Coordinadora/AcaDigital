@@ -7,8 +7,8 @@ export class Duracion{
 
     constructor(valor: number, unidad: string){
     if (valor <=0){
-        throw new Error("El valor de la duración debe ser positivo");
-    }
+        throw new Error("El valor de la duracion debe ser positivo");
+    };
     if (!UNIDADES_DURACION_VALIDAS.includes(unidad as UnidadDuracion)) {
         throw new Error(`La unidad de duración debe ser una de: ${UNIDADES_DURACION_VALIDAS.join(', ')}`);
     }
@@ -26,6 +26,6 @@ export class Duracion{
 
     toString(): string{
         return `${this.valor} ${this.unidad}`;
-    }
-}
+    };
+};
 
