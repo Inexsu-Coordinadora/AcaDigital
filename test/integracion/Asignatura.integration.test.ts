@@ -48,7 +48,7 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
         obtenerTodosUseCase = new ObtenerAsignaturasUseCase(repositorio);
     });
 
-    // Crear Asignatura 
+    // crear asignatura
     describe('CrearAsignaturaUseCase', () => {
         it('debe crear y persistir una nueva asignatura con un ID asignado', async () => {
             const asignaturaCreada = await crearUseCase.execute(DTO_CREACION);
