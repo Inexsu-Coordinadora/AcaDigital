@@ -9,10 +9,24 @@ export class ActualizarProgramaAcademicoUseCase {
 
   async execute(id: string, dto: ActualizarProgramaDto): Promise<IProgramaAcademico> {
     const programaExistente = await this.programaRepository.obtenerPorId(id);
+
     if (!programaExistente) {
-      throw new ErrorNoEncontrado('Programa academico no encontrado.');
+      throw new Error('Programa academico no encontrado.'); 
     };
-    programaExistente.actualizarInfoGeneral(dto.nombre, dto.descripcion);
-    return this.programaRepository.actualizar(id, programaExistente);
+
+    if (dto.nombre !== programaExistente.nombre) {
+      const conMismoNombre = await this.programaRepository.obtenerPorNombre(dto.nombre);
+
+      if (conMismoNombre && conMismoNombre.id !== id) {
+        throw new Error('Ya existe un programa academico con ese nombre.');
+      };
+    };
+
+    programaExistente.actualizarInfoGeneral(
+      dto.nombre,
+      dto.descripcion,
+    );
+
+    return this.programaRepository.guardar(programaExistente);
   };
 };

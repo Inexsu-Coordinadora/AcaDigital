@@ -7,6 +7,10 @@ import { ProgramaAcademico } from '../../../dominio/entidades/programa-academico
 export class CrearProgramaAcademicoUseCase {
   constructor(private readonly programaRepository: IProgramaAcademicoRepositorio) { }
   async execute(dto: CrearProgramaDto): Promise<IProgramaAcademico> {
+    const existe = await this.programaRepository.obtenerPorNombre(dto.nombre);
+    if (existe) {
+      throw new Error('Ya existe un programa academico con ese nombre');
+    };
     const duracion = new Duracion(dto.duracionValor, dto.duracionUnidad);
     const nuevoPrograma = new ProgramaAcademico(
       dto.nombre,
@@ -15,9 +19,8 @@ export class CrearProgramaAcademicoUseCase {
       dto.modalidad,
       duracion
     );
-    const programaCreado = await this.programaRepository.crear(nuevoPrograma);
 
-    return programaCreado;
-  }
-}
+    return this.programaRepository.guardar(nuevoPrograma);
+  };
+};
 

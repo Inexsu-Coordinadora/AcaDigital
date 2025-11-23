@@ -14,15 +14,15 @@ export class ActualizarAsignaturaUseCase {
             throw new ErrorNoEncontrado(`Asignatura con ID ${dto.id} no encontrada.`);
         };
 
-        if (dto.nombre !== asignaturaExistente.getNombre()) {
+        if (dto.nombre !== asignaturaExistente.nombre) { 
             const conMismoNombre = await this.repositorio.obtenerPorNombre(dto.nombre);
 
-            if (conMismoNombre && conMismoNombre.getId() !== dto.id) {
+            if (conMismoNombre && conMismoNombre.id !== dto.id) { 
                 throw new ErrorConflicto(`La asignatura con nombre '${dto.nombre}' ya existe.`);
             };
         };
 
-        asignaturaExistente.actualizarInformacion(
+        (asignaturaExistente as any).actualizarInformacion( 
             dto.nombre,
             dto.cargaHoraria,
             dto.tipo as TipoAsignatura

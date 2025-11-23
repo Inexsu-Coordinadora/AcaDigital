@@ -6,9 +6,19 @@ import { Duracion } from '../../../dominio/entidades/programa-academico/Duracion
 import { NivelEducativo, Modalidad } from '../../../dominio/entidades/programa-academico/NivelYModalidad.js';
 import { pool } from '../database/Conexion.js'; 
 
+interface ProgramaAcademicoRow {
+    id: string;
+    nombre: string;
+    descripcion: string;
+    nivelEducativo: string;
+    modalidad: string;
+    duracion_valor: number;
+    duracion_unidad: string;
+}
+
 export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRepositorio {
 
-    async crear(programa: IProgramaAcademico): Promise<IProgramaAcademico> {
+    async guardar(programa: IProgramaAcademico): Promise<IProgramaAcademico> {
         const query = `
             INSERT INTO programas_academicos 
             (id, nombre, descripcion, nivel, modalidad, duracion_valor, duracion_unidad)
@@ -17,13 +27,13 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         `;
         
         const values = [
-            programa.getId(),
-            programa.getNombre(),
-            programa.getDescripcion(),
-            programa.getNivelEducativo(),
-            programa.getModalidad(),
-            programa.getDuracion().getValor(),
-            programa.getDuracion().getUnidad()
+            programa.id,
+            programa.nombre,
+            programa.descripcion,
+            programa.nivelEducativo,
+            programa.modalidad,
+            programa.duracion.valor,
+            programa.duracion.unidad
         ];
 
         const result: QueryResult = await pool.query(query, values); 
@@ -68,8 +78,8 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         `;
         
         const values = [
-            programa.getNombre(),
-            programa.getDescripcion(),
+            programa.nombre,
+            programa.descripcion,
             id
         ];
 
@@ -91,13 +101,13 @@ export class PostgresProgramaAcademicoRepository implements IProgramaAcademicoRe
         }
     }
 
-    private mapRowToProgramaAcademico(row: any): ProgramaAcademico {
+    private mapRowToProgramaAcademico(row: ProgramaAcademicoRow): ProgramaAcademico {
         const duracion = new Duracion(row.duracion_valor, row.duracion_unidad);
         
         return new ProgramaAcademico(
             row.nombre,
             row.descripcion,
-            row.nivel as NivelEducativo,
+            row.nivelEducativo as NivelEducativo,
             row.modalidad as Modalidad,
             duracion,
             row.id
