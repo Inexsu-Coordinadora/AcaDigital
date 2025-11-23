@@ -152,6 +152,8 @@ Para generar el reporte de cobertura de código:
 npm test -- --coverage
 ```
 
+![Reporte de Cobertura](documentacion/entrega-3/coverage-report.jpg)
+
 ### Resumen de Cobertura
 
 | Tipo                     | Pruebas | Cobertura |
