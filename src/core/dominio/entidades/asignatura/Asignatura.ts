@@ -44,6 +44,14 @@ private readonly _id: number;
     public get fechaCreacion(): Date { return this._fechaCreacion; }
     public get fechaActualizacion(): Date { return this._fechaActualizacion; }
 
+    // Backwards-compatible method names expected by tests / older callers
+    public getId(): number { return this.id; }
+    public getNombre(): string { return this.nombre; }
+    public getCargaHoraria(): number { return this.cargaHoraria; }
+    public getTipo(): TipoAsignatura { return this.tipo; }
+    public getFechaCreacion(): Date { return this.fechaCreacion; }
+    public getFechaActualizacion(): Date { return this.fechaActualizacion; }
+
     public actualizarInformacion(
         nuevoNombre: string,
         nuevaCargaHoraria: number,

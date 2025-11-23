@@ -3,7 +3,7 @@ import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/reposit
 import type { CrearAsignaturaDTO } from '../dtos/CrearAsignaturaDTO.js';
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 
-import { ErrorConflicto } from '../../../errores/errorAplicacion.js';
+import { ErrorConflicto } from '../../../errores/ErrorAplicacion.js';
 
 
 export class CrearAsignaturaUseCase {

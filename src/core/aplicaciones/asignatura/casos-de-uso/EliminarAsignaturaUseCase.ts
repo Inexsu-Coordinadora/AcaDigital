@@ -1,6 +1,6 @@
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
 
-import { ErrorNoEncontrado } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado } from '../../../errores/ErrorAplicacion.js';
 
 export class EliminarAsignaturaUseCase {
     constructor(private readonly repositorio: IAsignaturaRepositorio) {}

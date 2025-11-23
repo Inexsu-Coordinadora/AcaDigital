@@ -10,4 +10,12 @@ export interface IProgramaAcademico{
     duracion: Duracion;
 
     actualizarInfoGeneral(nombre: string, descripcion: string): void;
+
+    // Compatibility methods expected by some tests / callers
+    getId?(): string;
+    getNombre?(): string;
+    getDescripcion?(): string;
+    getNivelEducativo?(): NivelEducativo;
+    getModalidad?(): Modalidad;
+    getDuracion?(): Duracion;
 }

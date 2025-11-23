@@ -2,7 +2,7 @@ import type { IProgramaAcademico } from '../../../dominio/interfaces/IProgramaAc
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 import type { ActualizarProgramaDto } from '../dtos/actualizar-programa.dto.js';
 
-import { ErrorNoEncontrado } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado } from '../../../errores/ErrorAplicacion.js';
 
 export class ActualizarProgramaAcademicoUseCase {
   constructor(private readonly programaRepository: IProgramaAcademicoRepositorio) { }

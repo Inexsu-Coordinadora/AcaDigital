@@ -6,4 +6,12 @@ export interface IAsignatura {
     tipo: TipoAsignatura;
     fechaCreacion: Date;
     fechaActualizacion: Date;
+
+    // Compatibility methods used by tests / legacy callers
+    getId?(): number;
+    getNombre?(): string;
+    getCargaHoraria?(): number;
+    getTipo?(): TipoAsignatura;
+    getFechaCreacion?(): Date;
+    getFechaActualizacion?(): Date;
 }

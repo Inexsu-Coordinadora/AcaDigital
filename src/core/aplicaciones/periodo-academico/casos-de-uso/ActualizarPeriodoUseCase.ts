@@ -4,7 +4,7 @@ import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcad
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { ActualizarPeriodoDTO } from '../dtos/ActualizarPeriodoDTO.js';
 
-import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/ErrorAplicacion.js';
 
 export class ActualizarPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };

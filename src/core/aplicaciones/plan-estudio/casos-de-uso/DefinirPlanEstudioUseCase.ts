@@ -5,7 +5,7 @@ import { DefinirPlanEstudioDTO } from "../dtos/DefinirPlanEstudioDTO.js";
 import { IProgramaAcademicoRepositorio } from "../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js";
 import { IAsignaturaRepositorio } from "../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js";
 
-import { ErrorNoEncontrado, ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../../errores/ErrorAplicacion.js';
 
 export class DefinirPlanEstudioUseCase {
     constructor(

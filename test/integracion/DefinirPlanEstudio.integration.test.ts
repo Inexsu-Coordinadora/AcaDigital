@@ -8,7 +8,7 @@ import { Duracion } from '../../src/core/dominio/entidades/programa-academico/Du
 import { NivelEducativo, Modalidad } from '../../src/core/dominio/entidades/programa-academico/NivelYModalidad.js';
 import { Asignatura, TipoAsignatura } from '../../src/core/dominio/entidades/asignatura/Asignatura.js';
 
-import { ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorAplicacion, ErrorValidacion } from '../../src/core/errores/ErrorAplicacion.js';
 
 let planRepo: PlanEstudioRepositorioInMemory;
 let programaRepo: ProgramaAcademicoRepositorioInMemory;
@@ -54,7 +54,7 @@ describe('INTEGRACION: DefinirPlanEstudioUseCase', () => {
             asignaturaRepo
         );
 
-        await programaRepo.crear(programaValido);
+        await programaRepo.guardar(programaValido);
         await asignaturaRepo.guardar(asignaturaValida);
     });
 
