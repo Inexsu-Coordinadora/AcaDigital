@@ -8,7 +8,4 @@ export interface IPeriodoAcademico {
     estado: EstadoPeriodo;
     createdAt: Date;
     updatedAt: Date;
-
-    activar(): void;
-    cerrar(): void;
 };

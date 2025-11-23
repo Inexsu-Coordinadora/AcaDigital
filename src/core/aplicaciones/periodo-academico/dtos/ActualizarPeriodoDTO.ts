@@ -1,4 +1,4 @@
-import type { EstadoPeriodo } from "../../../dominio/entidades/periodo-academico/EstadoPeriodo.js";
+import { EstadoPeriodo } from "../../../dominio/entidades/periodo-academico/EstadoPeriodo.js";
 export interface ActualizarPeriodoDTO {
     nombre?: string;
     fechaInicio?: string;

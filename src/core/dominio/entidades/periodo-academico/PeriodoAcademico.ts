@@ -1,4 +1,4 @@
-import type { EstadoPeriodo } from "./EstadoPeriodo.js";
+import { EstadoPeriodo } from "./EstadoPeriodo.js";
 import type { IPeriodoAcademico } from "../../interfaces/IPeriodoAcademico.js";
 import { randomUUID } from 'crypto';
 
@@ -21,37 +21,49 @@ export class PeriodoAcademico implements IPeriodoAcademico {
         createdAt?: Date;
         updatedAt?: Date;
     }){
+        const fechaInicioValida = !isNaN(props.fechaInicio.getTime());
+        const fechaFinValida = !isNaN(props.fechaFin.getTime());
+
+        if (!fechaInicioValida || !fechaFinValida) {
+            throw new Error("400: Las fechas de inicio o fin del período no son objetos Date válidos.");
+        }
+
         if (props.fechaFin <= props.fechaInicio) {
             throw new Error("La fecha de fin debe ser posterior a la fecha de inicio.");
         }
+
         this.id = props.id || randomUUID();
         this.nombre = props.nombre;
         this.fechaInicio = props.fechaInicio;
         this.fechaFin = props.fechaFin;
-        this.estado = props.estado || 'inactivo';
+        this.estado = props.estado || EstadoPeriodo.INACTIVO;
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
     }
 
     public activar(): void {
-        if (this.estado === 'cerrado') {
+        if (this.estado === EstadoPeriodo.CERRADO) {
             throw new Error("No se puede activar un período que ya está cerrado.");
         }
-        if (this.estado === 'activo') {
+        if (this.estado === EstadoPeriodo.ACTIVO) {
             return;
         }
-        this.estado = 'activo';
+        this.estado = EstadoPeriodo.ACTIVO;
         this.updatedAt = new Date();
     }
 
     public cerrar(): void {
-        if (this.estado === 'inactivo') {
+        if (this.estado === EstadoPeriodo.INACTIVO) {
             throw new Error("No se puede cerrar un período que aún no ha sido activado.");
         }
-        if (this.estado === 'cerrado') {
+        if (this.estado === EstadoPeriodo.CERRADO) {
             return;
         }
-        this.estado = 'cerrado';
+        this.estado = EstadoPeriodo.CERRADO;
         this.updatedAt = new Date();
+    }
+
+    public puedeOfertarAsignaturas(): boolean {
+        return this.estado === EstadoPeriodo.ACTIVO;
     }
 }

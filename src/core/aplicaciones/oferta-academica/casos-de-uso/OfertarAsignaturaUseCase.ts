@@ -5,6 +5,7 @@ import { OfertaAcademica } from '../../../dominio/entidades/oferta-academica/Ofe
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 
 
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorConflicto } from '../../../errores/errorAplicacion.js';
