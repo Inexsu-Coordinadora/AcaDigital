@@ -6,6 +6,7 @@
 ![Fastify](https://img.shields.io/badge/Fastify-000000?style=flat&logo=fastify&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Coverage](https://img.shields.io/badge/Coverage-76.9%25-yellow?style=flat)
 
 -----
 
@@ -26,6 +27,15 @@ Ampliar el sistema con validaciones de negocio complejas y tres servicios transa
 1.  **Definición de plan de estudio:** Vincular asignaturas a un programa académico (Relación N:M).
 2.  **Gestión de períodos:** Implementar la lógica de transición de estados (`activo`, `cerrado`) y validación de no solapamiento de fechas.
 3.  **Oferta de asignaturas por período:** Permitir la creación de grupos/secciones con cupos para un período activo.
+
+### Entrega 3 — Mejoras y Pruebas
+
+Optimizar la robustez del sistema mediante mejoras de infraestructura y una estrategia integral de aseguramiento de calidad:
+
+1.  **Infraestructura y Configuración:** Centralización de variables globales y gestión de entorno.
+2.  **Manejo de Errores:** Sistema unificado de excepciones para estandarizar la respuesta ante fallos.
+3.  **Testing:** Pruebas unitarias y de integración con repositorios en memoria para validar el comportamiento general del sistema.
+
 
 -----
 
@@ -61,6 +71,11 @@ npm run migrate
 -----
 
 ## Endpoints (API)
+
+#### Documentación Interactiva
+- Swagger UI disponible en *http://localhost:3000/docs*
+- Generada automáticamente con `@fastify/swagger`
+- Cubre todos los endpoints de las 3 entregas
 
 ### CRUD Base (Entrega 1)
 
@@ -116,6 +131,36 @@ El sistema implementa validaciones en la Capa de Presentación (Schema Fastify) 
   "message": "No puede activar un periodo que se solapa con otro periodo activo."
 }
 ```
+
+-----
+
+-----
+
+## Pruebas Automatizadas (Entrega 3)
+
+### Ejecución de Pruebas
+
+Para ejecutar todas las pruebas (unitarias e integración):
+
+```bash
+npm test
+```
+
+Para generar el reporte de cobertura de código:
+
+```bash
+npm test -- --coverage
+```
+
+![Reporte de Cobertura](documentacion/entrega-3/coverage-report.jpg)
+
+### Resumen de Cobertura
+
+| Tipo                     | Pruebas | Cobertura |
+|--------------------------|---------|-----------|
+| Unitarias                | 27      | 95–100%   |
+| Integración              | 9       | 90%       |
+| **Global**               | **36**  | **76.92%**|
 
 -----
 
