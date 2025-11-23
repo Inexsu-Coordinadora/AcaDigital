@@ -1,8 +1,9 @@
 import { CrearPeriodoUseCase } from '../../src/core/aplicaciones/periodo-academico/casos-de-uso/CrearPeriodoUseCase.js';
 import { ActualizarPeriodoUseCase } from '../../src/core/aplicaciones/periodo-academico/casos-de-uso/ActualizarPeriodoUseCase.js';
 import type { IPeriodoRepositorio } from '../../src/core/dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
-import { ErrorAplicacion, ErrorConflicto, ErrorNoEncontrado } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorAplicacion, ErrorConflicto, ErrorNoEncontrado } from '../../src/core/errores/ErrorAplicacion.js';
 import { PeriodoAcademico } from '../../src/core/dominio/entidades/periodo-academico/PeriodoAcademico.js';
+import { EstadoPeriodo } from '../../src/core/dominio/entidades/periodo-academico/EstadoPeriodo.js';
 
 const mockPeriodoRepositorio: IPeriodoRepositorio = {
     guardar: jest.fn(),
@@ -69,7 +70,7 @@ describe('Pruebas Básicas de Período Académico', () => {
             nombre: 'Periodo Original',
             fechaInicio: new Date('2024-01-01'),
             fechaFin: new Date('2024-06-30'),
-            estado: 'inactivo'
+              estado: EstadoPeriodo.ACTIVO,
         });
 
         // Prueba la actualización exitosa de un período existente

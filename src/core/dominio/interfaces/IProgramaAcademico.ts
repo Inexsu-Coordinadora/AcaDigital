@@ -2,12 +2,20 @@ import type { NivelEducativo, Modalidad } from "../entidades/programa-academico/
 import type { Duracion } from "../entidades/programa-academico/Duracion.js";
 
 export interface IProgramaAcademico{
-    getId(): string;
-    getNombre(): string;
-    getDescripcion(): string;
-    getNivelEducativo(): NivelEducativo;
-    getModalidad(): Modalidad;
-    getDuracion(): Duracion;
-    actualizarInfoGeneral(nuevoNombre: string, nuevaDescripcion: string):void;
-}
+    id: string;
+    nombre: string;
+    descripcion: string;
+    nivelEducativo: NivelEducativo;
+    modalidad: Modalidad;
+    duracion: Duracion;
 
+    actualizarInfoGeneral(nombre: string, descripcion: string): void;
+
+    // Compatibility methods expected by some tests / callers
+    getId?(): string;
+    getNombre?(): string;
+    getDescripcion?(): string;
+    getNivelEducativo?(): NivelEducativo;
+    getModalidad?(): Modalidad;
+    getDuracion?(): Duracion;
+}

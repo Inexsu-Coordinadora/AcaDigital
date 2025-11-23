@@ -13,7 +13,7 @@ import { TipoAsignatura, Asignatura } from '../../src/core/dominio/entidades/asi
 
 import type { IAsignatura } from '../../src/core/dominio/interfaces/IAsignatura.js';
 
-import { ErrorConflicto, ErrorNoEncontrado } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorNoEncontrado } from '../../src/core/errores/ErrorAplicacion.js';
 
 
 let repositorio: AsignaturaRepositorioInMemory;
@@ -53,8 +53,8 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
         it('debe crear y persistir una nueva asignatura con un ID asignado', async () => {
             const asignaturaCreada = await crearUseCase.execute(DTO_CREACION);
 
-            expect(asignaturaCreada.getId()).toBe(1);
-            expect(asignaturaCreada.getNombre()).toBe(DTO_CREACION.nombre);
+            expect(asignaturaCreada.id).toBe(1);
+            expect(asignaturaCreada.nombre).toBe(DTO_CREACION.nombre);
 
             const persistida = await repositorio.obtenerPorId(1);
             expect(persistida).not.toBeNull();
@@ -72,14 +72,14 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
         let idExistente: number;
 
         beforeEach(async () => {
-            idExistente = (await crearUseCase.execute(DTO_CREACION)).getId();
+            idExistente = (await crearUseCase.execute(DTO_CREACION)).id;
         });
 
         it('debe obtener la asignatura por un ID existente', async () => {
             const asignatura = await obtenerPorIdUseCase.obtenerPorId(idExistente);
 
             expect(asignatura).not.toBeNull();
-            expect(asignatura!.getId()).toBe(idExistente);
+            expect(asignatura!.id).toBe(idExistente);
         });
 
         it('debe retornar null para un ID inexistente', async () => {
@@ -94,7 +94,7 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
         let idAsignatura: number;
 
         beforeEach(async () => {
-            idAsignatura = (await crearUseCase.execute(DTO_CREACION)).getId();
+            idAsignatura = (await crearUseCase.execute(DTO_CREACION)).id;
             await crearUseCase.execute(DTO_CREACION_2); 
         });
 
@@ -108,10 +108,10 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
 
             const resultado = await actualizarUseCase.execute(nuevosDatos);
 
-            expect(resultado.getNombre()).toBe(nuevosDatos.nombre);
+            expect(resultado.nombre).toBe(nuevosDatos.nombre);
 
             const persistida = await repositorio.obtenerPorId(idAsignatura);
-            expect(persistida!.getCargaHoraria()).toBe(8);
+            expect(persistida!.cargaHoraria).toBe(8);
         });
 
         it('debe lanzar ErrorNoEncontrado si el ID no existe', async () => {
@@ -137,7 +137,7 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
         let idExistente: number;
 
         beforeEach(async () => {
-            idExistente = (await crearUseCase.execute(DTO_CREACION)).getId();
+            idExistente = (await crearUseCase.execute(DTO_CREACION)).id;
         });
 
         it('debe eliminar la asignatura exitosamente', async () => {
@@ -162,7 +162,7 @@ describe('INTEGRACION: Casos de Uso de Asignatura (Repositorio In-Memory)', () =
             const resultados = await obtenerTodosUseCase.findAll();
 
             expect(resultados).toHaveLength(2);
-            expect(resultados.map(a => a.getNombre())).toEqual(expect.arrayContaining([
+            expect(resultados.map(a => a.nombre)).toEqual(expect.arrayContaining([
                 DTO_CREACION.nombre,
                 DTO_CREACION_2.nombre
             ]));

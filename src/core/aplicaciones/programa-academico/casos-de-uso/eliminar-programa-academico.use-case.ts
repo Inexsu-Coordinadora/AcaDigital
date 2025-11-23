@@ -1,7 +1,7 @@
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 
 
-import { ErrorNoEncontrado, ErrorValidacion } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorValidacion } from '../../../errores/ErrorAplicacion.js';
 
 export class EliminarProgramaAcademicoUseCase {
   constructor(private readonly programaRepository: IProgramaAcademicoRepositorio) {}

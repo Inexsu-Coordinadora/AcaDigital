@@ -1,7 +1,7 @@
 import type { IProgramaAcademico as ProgramaAcademicoType } from "../IProgramaAcademico.js";
 
 export interface IProgramaAcademicoRepositorio {
-    crear(programa: ProgramaAcademicoType):
+    guardar(programa: ProgramaAcademicoType):
     Promise<ProgramaAcademicoType>;
     obtenerPorId(id: string):
     Promise<ProgramaAcademicoType | null>;

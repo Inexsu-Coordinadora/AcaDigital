@@ -3,59 +3,60 @@ import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js';
 import { Asignatura } from '../../../dominio/entidades/asignatura/Asignatura.js';
 
 export class AsignaturaRepositorioInMemory implements IAsignaturaRepositorio {
-    private asignaturas: Asignatura[] = []; 
-    private nextId = 1;
+    private asignaturas: Map<number, IAsignatura>;
 
+    constructor() {
+        this.asignaturas = new Map<number, IAsignatura>();
+    }
+    /**
+     * Guarda una Asignatura.
+     * @param asignatura
+     * @returns
+     */
     async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
-        const id = asignatura.getId();
-        const index = this.asignaturas.findIndex(a => a.getId() === id);
-
-        if (id && index !== -1) {
-
-            this.asignaturas.splice(index, 1); 
-            
-            this.asignaturas.push(asignatura as Asignatura);
-            return asignatura;
-            
-        } else if (id && index === -1) {
-
-            this.asignaturas.push(asignatura as Asignatura);
-            
-            if (id >= this.nextId) {
-                this.nextId = id + 1;
-            }
-            return asignatura;
-            
-        } else {
-            const nuevoId = this.nextId++;
-            
-            const nueva = new Asignatura(
-                asignatura.getNombre(),
-                asignatura.getCargaHoraria(),
-                asignatura.getTipo(),
-                nuevoId,
-                asignatura.getFechaCreacion(),
-                asignatura.getFechaActualizacion()
-            );
-            this.asignaturas.push(nueva);
+        let id = asignatura.id;
+        // If id is 0 (not set by caller), assign a new incremental id
+        if (id === undefined || id === null) {
+            throw new Error('La asignatura debe tener un ID para ser guardada.');
+        }
+        if (id === 0) {
+            // compute next id
+            const existingIds = Array.from(this.asignaturas.keys());
+            const nextId = existingIds.length === 0 ? 1 : Math.max(...existingIds) + 1;
+            // create a new Asignatura instance with the assigned id
+            const nueva = new Asignatura(asignatura.nombre, asignatura.cargaHoraria, asignatura.tipo as any, nextId, asignatura.fechaCreacion, asignatura.fechaActualizacion);
+            this.asignaturas.set(nextId, nueva);
             return nueva;
         }
+
+        this.asignaturas.set(id, asignatura);
+        return asignatura;
     }
 
+    /**
+     * Obtiene una Asignatura por su ID.
+     * @param id
+     * @returns
+     */
     async obtenerPorId(id: number): Promise<IAsignatura | null> {
-        return this.asignaturas.find(a => a.getId() === id) || null;
-    }
+        return this.asignaturas.get(id) || null;
+    };
 
+    // Metodos stubs para completar la interfaz que no son necesarios para este test
     async obtenerTodos(): Promise<IAsignatura[]> {
-        return this.asignaturas;
-    }
+        return Array.from(this.asignaturas.values());
+    };
 
     async eliminar(id: number): Promise<void> {
-        this.asignaturas = this.asignaturas.filter(a => a.getId() !== id);
-    }
+        this.asignaturas.delete(id);
+    };
 
     async obtenerPorNombre(nombre: string): Promise<IAsignatura | null> {
-        const nombreLower = nombre.trim().toLowerCase();
-        return this.asignaturas.find(a => a.getNombre().toLowerCase() === nombreLower) || null;
-    }
-}
+        for (const asignatura of this.asignaturas.values()) {
+            if (asignatura.nombre === nombre) {
+                return asignatura;
+            }
+        }
+        return null;
+    };
+};

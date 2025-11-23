@@ -4,7 +4,7 @@ import { IAsignaturaRepositorio } from '../../src/core/dominio/interfaces/reposi
 import { IPlanEstudioRepositorio } from '../../src/core/dominio/interfaces/repositorio/IPlanEstudioRepositorio.js';
 import { PlanEstudio } from '../../src/core/dominio/entidades/plan-estudio/PlanEstudio.js';
 
-import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../src/core/errores/errorAplicacion.js';
+import { ErrorAplicacion, ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio, ErrorValidacion } from '../../src/core/errores/ErrorAplicacion.js';
 
 const mockProgramaRepository: Partial<IProgramaAcademicoRepositorio> = {
     obtenerPorId: jest.fn() as jest.Mock<Promise<any | null>, [string]>,

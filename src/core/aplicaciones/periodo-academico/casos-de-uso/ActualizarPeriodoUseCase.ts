@@ -1,9 +1,10 @@
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 import { PeriodoAcademico } from '../../../dominio/entidades/periodo-academico/PeriodoAcademico.js';
 import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcademico.js';
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { ActualizarPeriodoDTO } from '../dtos/ActualizarPeriodoDTO.js';
 
-import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/errorAplicacion.js';
+import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/ErrorAplicacion.js';
 
 export class ActualizarPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };
@@ -34,16 +35,16 @@ export class ActualizarPeriodoUseCase {
         periodoEntidad.fechaFin = nuevaFechaFin;
 
         if (input.estado && input.estado !== periodoEntidad.estado) {
-            if (input.estado === 'activo') {
+            if (input.estado === EstadoPeriodo.ACTIVO) {
                 periodoEntidad.activar();
-            } else if (input.estado === 'cerrado') {
+            } else if (input.estado === EstadoPeriodo.CERRADO) {
                 periodoEntidad.cerrar();
-            } else if (input.estado === 'inactivo') {
+            } else if (input.estado === EstadoPeriodo.INACTIVO) {
                 throw new ErrorReglaNegocio ('Transicion de estado invalida: no se puede pasar a "inactivo" directamente.');
             }
         }
 
-        if (periodoEntidad.estado === 'activo') {
+        if (periodoEntidad.estado === EstadoPeriodo.ACTIVO) {
             const periodosTraslapados = await this.repo.obtenerPeriodosActivosTraslapados(
                 periodoEntidad.fechaInicio,
                 periodoEntidad.fechaFin,
