@@ -31,12 +31,12 @@ function validacionConfiguracion(): AppConfig {
 
     cofiguracion.DATABASE_URL = obtenerEnv('DATABASE_URL');
 
-    const puertoStr = obtenerEnv('PORT');
+    const puertoStr = env.PORT || '3000';;
     cofiguracion.PORT = parseInt(puertoStr, 10);
 
     if (isNaN(cofiguracion.PORT) || cofiguracion.PORT < 1 || cofiguracion.PORT > 65535) {
         console.error(`ERROR DE CONFIGURACION: PORT debe ser un numero valido (1-65535), Valor actual: ${puertoStr}`);
-        process.exit(1);
+        cofiguracion.PORT = 8080;
     };
 
     const nodeEnv = env.NODE_ENV || 'development';
