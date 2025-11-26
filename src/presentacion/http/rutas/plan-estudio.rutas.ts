@@ -1,10 +1,10 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { DefinirPlanEstudioDTO } from '../../../core/aplicaciones/plan-estudio/dtos/DefinirPlanEstudioDTO.js';
-import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio } from '../../../core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio } from '../../../core/errores/ErrorAplicacion.js';
 
 type CrearBody = { asignaturaId: number, semestreNivel: number, creditosCarga: number };
 type CrearRequest = FastifyRequest<{ Params: { programaId: string }; Body: CrearBody }>;
-
+type ListarRequest = FastifyRequest<{ Params: { programaId: string } }>;
 
 const TAG_PLAN = 'Plan de Estudio';
 
@@ -40,6 +40,12 @@ const EsquemaRespuestaPlanItem = {
     }
 };
 
+const EsquemaRespuestaPlanLista = {
+    type: 'array',
+    description: 'Lista de items del Plan de Estudio para el programa dado.',
+    items: EsquemaRespuestaPlanItem
+};
+
 const EsquemaError = { type: 'object', properties: { error: { type: 'string' } } };
 
 const manejarError = (error: unknown, reply: FastifyReply) => {
@@ -64,13 +70,38 @@ export default function rutasPlanEstudio(
     options: {
         dependencies: {
             definirPlanEstudioUseCase: { ejecutar: (dto: DefinirPlanEstudioDTO) => Promise<any> };
+            obtenerPlanesEstudioPorProgramaUseCase: { ejecutar: (programaId: string) => Promise<any[]> };
         };
     },
     done: () => void
 ) {
-    const { definirPlanEstudioUseCase } = options.dependencies;
-    const prefijoBase = '/:id/'; 
+    const { definirPlanEstudioUseCase, obtenerPlanesEstudioPorProgramaUseCase } = options.dependencies;
+    const prefijoBase = '/:programaId/'; 
 
+    fastify.get(
+        `${prefijoBase}items`, 
+        {
+            schema: {
+                tags: [TAG_PLAN],
+                summary: 'Obtener Plan de Estudio',
+                description: 'Obtiene todos los items del plan de estudio (asignatura-programa) para un Programa Académico específico. Devuelve 404 si el programa no existe.',
+                params: EsquemaParamsPrograma,
+                response: { 
+                    200: EsquemaRespuestaPlanLista, 
+                    404: EsquemaError            
+                }
+            }
+        },
+        async (req: ListarRequest, reply: FastifyReply) => {
+            try {
+                const { programaId } = req.params;
+                const items = await obtenerPlanesEstudioPorProgramaUseCase.ejecutar(programaId);
+                return reply.code(200).send(items);
+            } catch (err) {
+                return manejarError(err, reply);
+            }
+        }
+    );
 
     fastify.post(
         `${prefijoBase}crear-plan`, 
@@ -83,9 +114,9 @@ export default function rutasPlanEstudio(
                 body: EsquemaBodyDefinir,
                 response: { 
                     201: EsquemaRespuestaPlanItem, 
-                    400: EsquemaError,           
-                    404: EsquemaError,           
-                    409: EsquemaError            
+                    400: EsquemaError,           
+                    404: EsquemaError,           
+                    409: EsquemaError            
                 }
             }
         },

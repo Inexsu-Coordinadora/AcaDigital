@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { OfertarAsignaturaDTO } from '../../../core/aplicaciones/oferta-academica/dtos/OfertarAsignaturaDTO.js';
 import type { OfertarAsignaturaUseCase } from '../../../core/aplicaciones/oferta-academica/casos-de-uso/OfertarAsignaturaUseCase.js';
 
-import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio } from '../../../core/errores/errorAplicacion.js';
+import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio } from '../../../core/errores/ErrorAplicacion.js';
 
 type CrearRequest = FastifyRequest<{ Body: OfertarAsignaturaDTO }>;
 
@@ -64,7 +64,6 @@ const manejarError = (error: unknown, respuesta: FastifyReply) => {
     return respuesta.code(500).send({ error: mensaje || 'Error interno del servidor.' });
 };
 
-
 export default function rutasOfertaAcademica(
     fastify: FastifyInstance,
     options: {
@@ -76,7 +75,6 @@ export default function rutasOfertaAcademica(
 ) {
     const { ofertarAsignaturaUseCase } = options.dependencies;
     const prefijo = '/';
-
 
     fastify.post(
         `${prefijo}crear-oferta-exito`,
@@ -116,7 +114,6 @@ export default function rutasOfertaAcademica(
         }
     );
 
-
     fastify.post(
         `${prefijo}error-asignatura-inexistente`,
         {
@@ -133,7 +130,6 @@ export default function rutasOfertaAcademica(
         }
     );
     
-
     fastify.post(
         `${prefijo}error-cupo-invalido`,
         {
@@ -149,7 +145,6 @@ export default function rutasOfertaAcademica(
             return manejarError(new ErrorReglaNegocio('El cupo disponible debe ser un número positivo mayor a 0.'), respuesta);
         }
     );
-
 
     fastify.post(
         `${prefijo}error-duplicidad-grupo`,

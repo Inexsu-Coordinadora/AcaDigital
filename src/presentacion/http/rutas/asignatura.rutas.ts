@@ -1,6 +1,5 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { TipoAsignatura } from '../../../core/dominio/entidades/asignatura/Asignatura.js';
-
 import {
     CrearAsignaturaUseCase,
     ObtenerAsignaturasUseCase,
@@ -13,7 +12,10 @@ import {
 
 type CrearRequest = FastifyRequest<{ Body: CrearAsignaturaDTO }>;
 type ObtenerRequest = FastifyRequest<{ Params: { id: number } }>;
-type ActualizarRequest = FastifyRequest<{ Params: { id: number }; Body: Omit<ActualizarAsignaturaDTO, 'id'> }>;
+type ActualizarRequest = FastifyRequest<{ 
+    Params: { id: number }; 
+    Body: Omit<ActualizarAsignaturaDTO, 'id'> 
+}>;
 
 const TAG_ASIGNATURA = 'Asignaturas';
 
@@ -39,13 +41,24 @@ const EsquemaRespuestaAsignatura = {
     },
 };
 
-const EsquemaParametrosId = { type: 'object', properties: { id: { type: 'number', description: 'ID único de la asignatura.' } }, required: ['id'] };
+const EsquemaParametrosId = { 
+    type: 'object', 
+    properties: { 
+        id: { type: 'number', description: 'ID único de la asignatura.' } 
+    }, 
+    required: ['id'] 
+};
 
 const manejarError = (error: unknown, respuesta: FastifyReply) => {
-    const mensaje = (error as any)?.message;
+    const mensaje = (error as Error)?.message; 
+
     if (typeof mensaje === 'string') {
-        if (mensaje.startsWith('409')) return respuesta.code(409).send({ error: mensaje.split(': ')[1]?.trim() });
-        if (mensaje.startsWith('404')) return respuesta.code(404).send({ error: mensaje.split(': ')[1]?.trim() });
+        if (mensaje.startsWith('409')) {
+            return respuesta.code(409).send({ error: mensaje.split(': ')[1]?.trim() || 'Conflicto de datos.' });
+        }
+        if (mensaje.startsWith('404')) {
+            return respuesta.code(404).send({ error: mensaje.split(': ')[1]?.trim() || 'Recurso no encontrado.' });
+        }
     }
     return respuesta.code(400).send({ error: mensaje || 'Error desconocido o validación de esquema fallida.' });
 };
@@ -63,7 +76,14 @@ export default function rutasAsignatura(
     },
     done: () => void,
 ) {
-    const { crearAsignaturaUseCase, listarAsignaturasUseCase, obtenerAsignaturaPorIdUseCase, actualizarAsignaturaUseCase, eliminarAsignaturaUseCase } = options.dependencies;
+    const { 
+        crearAsignaturaUseCase, 
+        listarAsignaturasUseCase, 
+        obtenerAsignaturaPorIdUseCase, 
+        actualizarAsignaturaUseCase, 
+        eliminarAsignaturaUseCase 
+    } = options.dependencies;
+    
     const prefijo = '/';
 
     fastify.post(
@@ -97,7 +117,7 @@ export default function rutasAsignatura(
                 response: { 200: { type: 'array', items: EsquemaRespuestaAsignatura } }
             }
         },
-        async (peticion: FastifyRequest, respuesta: FastifyReply) => {
+        async (_peticion: FastifyRequest, respuesta: FastifyReply) => {
             const asignaturas = await listarAsignaturasUseCase.findAll();
             return respuesta.send(asignaturas);
         }
@@ -119,7 +139,9 @@ export default function rutasAsignatura(
         },
         async (peticion: ObtenerRequest, respuesta: FastifyReply) => {
             const asignatura = await obtenerAsignaturaPorIdUseCase.obtenerPorId(peticion.params.id);
-            if (!asignatura) return respuesta.code(404).send({ error: `Asignatura con ID ${peticion.params.id} no encontrada.` });
+            if (!asignatura) {
+                return respuesta.code(404).send({ error: `Asignatura con ID ${peticion.params.id} no encontrada.` });
+            }
             return respuesta.send(asignatura);
         }
     );
@@ -143,7 +165,12 @@ export default function rutasAsignatura(
         async (peticion: ActualizarRequest, respuesta: FastifyReply) => {
             try {
                 const id = peticion.params.id;
-                const asignaturaActualizada = await actualizarAsignaturaUseCase.execute({ id, ...peticion.body } as any);
+                const datosActualizacion: ActualizarAsignaturaDTO = {
+                    id, 
+                    ...peticion.body
+                };
+
+                const asignaturaActualizada = await actualizarAsignaturaUseCase.execute(datosActualizacion);
                 return respuesta.send(asignaturaActualizada);
             } catch (error) {
                 return manejarError(error, respuesta);
@@ -168,7 +195,7 @@ export default function rutasAsignatura(
         async (peticion: ObtenerRequest, respuesta: FastifyReply) => {
             try {
                 await eliminarAsignaturaUseCase.execute(peticion.params.id);
-                return respuesta.code(204).send();
+                return respuesta.code(204).send(); 
             } catch (error) {
                 return manejarError(error, respuesta);
             }

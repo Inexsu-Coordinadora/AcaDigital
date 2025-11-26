@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
-    "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
+    "migrate": "tsx --env-file .env scripts/run-migrations.js",
     "start": "node dist/server.js",
     "test": "jest",
     "test:watch": "jest --watch",

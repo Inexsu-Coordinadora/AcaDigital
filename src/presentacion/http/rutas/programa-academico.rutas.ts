@@ -1,244 +1,240 @@
-import type { FastifyInstance, FastifySchema } from 'fastify';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+
 import {
   CrearProgramaAcademicoUseCase,
   ListarProgramasAcademicosUseCase,
   ObtenerProgramaAcademicoPorIdUseCase,
   ActualizarProgramaAcademicoUseCase,
   EliminarProgramaAcademicoUseCase,
-  type CrearProgramaDto,
-  type ActualizarProgramaDto,
-
 } from '../../../core/aplicaciones/programa-academico/index.js';
 
-import {
-  DefinirPlanEstudioUseCase,
-  type DefinirPlanEstudioDTO
-} from '../../../core/aplicaciones/plan-estudio/index.js';
+interface CrearProgramaDto {
+  nombre: string;
+  descripcion: string;
+  nivel: string;
+  modalidad: string;
+  duracionValor: number;
+  duracionUnidad: 'meses' | 'años' | 'semestres' | 'trimestres';
+}
 
-const definicionPlanEstudioBodySchema = {
+interface ActualizarProgramaDto {
+  nombre: string;
+  descripcion: string;
+}
+
+interface ProgramaIdParams {
+  programaId: string;
+}
+
+interface ProgramaRespuesta {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  nivel: string;
+  modalidad: string;
+  duracionValor: number;
+  duracionUnidad: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ErrorRespuesta {
+  codigo: string;
+  mensaje: string;
+}
+
+const ProgramaIdParamsSchema = {
   type: 'object',
-  required: ['asignaturaId', 'semestreNivel', 'creditosCarga'],
   properties: {
-    asignaturaId: { type: 'integer', minimum: 1 },
-    semestreNivel: { type: 'integer', minimum: 1 },
-    creditosCarga: { type: 'number', minimum: 0.01 },
+    programaId: { type: 'string', description: 'ID del programa académico' }
   },
-  additionalProperties: false
-};
-
-const programaIdParamSchema = {
-  type: 'object',
   required: ['programaId'],
+};
+
+const ProgramaRespuestaSchema = {
+  type: 'object',
   properties: {
-    programaId: {
-      type: 'string',
-      format: 'uuid',
-      description: 'El ID unico del programa academico.'
-    }
+    id: { type: 'string' },
+    nombre: { type: 'string' },
+    descripcion: { type: 'string' },
+    nivel: { type: 'string' },
+    modalidad: { type: 'string' },
+    duracionValor: { type: 'number' },
+    duracionUnidad: { type: 'string' },
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
   },
-  additionalProperties: false
 };
 
-const DefinicionPlanEstudioRouteSchema: FastifySchema = {
-  params: programaIdParamSchema,
-  body: definicionPlanEstudioBodySchema,
+const ErrorRespuestaSchema = {
+  type: 'object',
+  properties: {
+    codigo: { type: 'string' },
+    mensaje: { type: 'string' },
+  },
+  required: ['codigo', 'mensaje'],
 };
 
-export function registerProgramaAcademicoRoutes(
-  server: FastifyInstance,
-  crearProgramaUseCase: CrearProgramaAcademicoUseCase,
-  listarProgramasUseCase: ListarProgramasAcademicosUseCase,
-  obtenerProgramaPorIdUseCase: ObtenerProgramaAcademicoPorIdUseCase,
-  actualizarProgramaUseCase: ActualizarProgramaAcademicoUseCase,
-  eliminarProgramaUseCase: EliminarProgramaAcademicoUseCase,
+interface ProgramaAcademicoDependencies {
+  crearProgramaAcademicoUseCase: CrearProgramaAcademicoUseCase;
+  listarProgramasAcademicosUseCase: ListarProgramasAcademicosUseCase;
+  obtenerProgramaAcademicoUseCase: ObtenerProgramaAcademicoPorIdUseCase;
+  actualizarProgramaAcademicoUseCase: ActualizarProgramaAcademicoUseCase;
+  eliminarProgramaAcademicoUseCase: EliminarProgramaAcademicoUseCase;
+}
 
-  definirPlanEstudioUseCase: DefinirPlanEstudioUseCase
+export default async function rutasProgramaAcademico(
+  instance: FastifyInstance,
+  options: FastifyPluginOptions
 ) {
 
-  server.post('/:programaId/plan-estudio', {
-    schema: DefinicionPlanEstudioRouteSchema
+  const {
+    crearProgramaAcademicoUseCase,
+    listarProgramasAcademicosUseCase,
+    obtenerProgramaAcademicoUseCase,
+    actualizarProgramaAcademicoUseCase,
+    eliminarProgramaAcademicoUseCase,
+  } = options.dependencies as ProgramaAcademicoDependencies;
+
+  const TAG = ['Programas Académicos'];
+
+  instance.post('/', {
+    schema: {
+      tags: TAG,
+      summary: 'Crear un nuevo Programa Académico',
+      description: 'Registra un nuevo programa academico en el sistema.',
+      body: {
+        type: 'object',
+        properties: {
+          nombre: { type: 'string', description: 'Nombre del programa' },
+          descripcion: { type: 'string', description: 'Descripción del programa' },
+          nivel: { type: 'string', description: 'Nivel académico (ej: Pregrado, Posgrado)' },
+          modalidad: { type: 'string', description: 'Modalidad (ej: Presencial, Virtual)' },
+          duracionValor: { type: 'number', description: 'Valor numérico de la duración' },
+          duracionUnidad: { type: 'string', description: 'Unidad de duración (ej: meses, semestres)' },
+        },
+        required: ['nombre', 'descripcion', 'nivel', 'modalidad', 'duracionValor', 'duracionUnidad'],
+      },
+      response: {
+        201: {
+          ...ProgramaRespuestaSchema,
+          description: 'Programa Académico creado exitosamente.', 
+        },
+        400: {
+          ...ErrorRespuestaSchema,
+          description: 'Solicitud inválida (ej: datos de entrada faltantes o incorrectos).', 
+        },
+        409: {
+          ...ErrorRespuestaSchema,
+          description: 'Conflicto: Ya existe un programa con el mismo nombre.', 
+        },
+      },
+    },
   }, async (request, reply) => {
-    const { programaId } = request.params as { programaId: string };
-    const { asignaturaId, semestreNivel, creditosCarga } = request.body as {
-      asignaturaId: number,
-      semestreNivel: number,
-      creditosCarga: number
-    };
-    try {
-      const dto: DefinirPlanEstudioDTO = {
-        programaId,
-        asignaturaId,
-        semestreNivel,
-        creditosCarga
-      };
-      const nuevoVinculo = await definirPlanEstudioUseCase.ejecutar(dto);
-      return reply.code(201).send(nuevoVinculo);
-    } catch (error: any) {
-      if (error.message.includes('no encontrado') || error.message.includes('inexistente')) {
-        return reply.code(404).send({ message: error.message });
-      };
-      if (error.message.includes('ya está registrada')) {
-        return reply.code(409).send({ message: error.message });
-      };
-      return reply.code(400).send({ message: error.message });
-    };
+    const programaCreado = await crearProgramaAcademicoUseCase.execute(request.body as CrearProgramaDto);
+    return reply.code(201).send(programaCreado);
   });
 
-
-  server.post('/', { schema: { body: crearProgramaBodySchema } }, async (request, reply) => {
-    try {
-      const dto = request.body as CrearProgramaDto;
-      const nuevoPrograma = await crearProgramaUseCase.execute(dto);
-
-      return reply.status(201).send({
-        id: nuevoPrograma.id,  
-        nombre: nuevoPrograma.nombre, 
-        descripcion: nuevoPrograma.descripcion, 
-        nivel: nuevoPrograma.nivelEducativo, 
-        modalidad: nuevoPrograma.modalidad, 
-        duracion: {
-          valor: nuevoPrograma.duracion.valor, 
-          unidad: nuevoPrograma.duracion.unidad 
-        }
-      });
-    } catch (error: any) {
-      return reply.status(400).send({ message: error.message });
-    }
+  instance.get('/', {
+    schema: {
+      tags: TAG,
+      summary: 'Listar todos los Programas Académicos',
+      description: 'Obtiene un listado completo de todos los programas académicos registrados.',
+      response: {
+        200: {
+          type: 'array',
+          items: ProgramaRespuestaSchema,
+          description: 'Listado de Programas Académicos obtenido exitosamente.',
+        },
+        500: {
+          ...ErrorRespuestaSchema,
+          description: 'Error interno del servidor al obtener el listado.',
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const programas = await listarProgramasAcademicosUseCase.execute();
+    return programas;
   });
 
-  server.get('/', async (request, reply) => {
-    try {
-      const programas = await listarProgramasUseCase.execute();
-
-      return reply.send(programas.map(p => ({
-        id: p.id, 
-        nombre: p.nombre,
-        descripcion: p.descripcion, 
-        nivel: p.nivelEducativo, 
-        modalidad: p.modalidad, 
-        duracion: {
-          valor: p.duracion.valor, 
-          unidad: p.duracion.unidad 
-        }
-      })));
-    } catch (error: any) {
-      return reply.status(500).send({ message: error.message });
-    };
+  instance.get('/:programaId', {
+    schema: {
+      tags: TAG,
+      summary: 'Obtener Programa Académico por ID',
+      description: 'Busca y retorna un programa academico específico por su ID.',
+      params: ProgramaIdParamsSchema,
+      response: {
+        200: {
+          ...ProgramaRespuestaSchema,
+          description: 'Programa Académico encontrado.',
+        },
+        404: {
+          ...ErrorRespuestaSchema,
+          description: 'No se encontró el programa académico con el ID especificado.',
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const { programaId } = request.params as ProgramaIdParams;
+    const programa = await obtenerProgramaAcademicoUseCase.execute(programaId);
+    return programa;
   });
 
-  server.get('/:id', async (request, reply) => {
-    try {
-      const { id } = request.params as { id: string };
-      const idLimpio = id?.trim();
-
-      if (!idLimpio || idLimpio.length === 0) {
-        return reply.status(400).send({ message: 'El ID es obligatorio' });
-      };
-
-      const programa = await obtenerProgramaPorIdUseCase.execute(idLimpio);
-      if (!programa) {
-        return reply.status(404).send({
-          message: 'Programa no encontrado',
-          idBuscado: idLimpio
-        });
-      };
-
-      return reply.send({
-        id: programa.id, 
-        nombre: programa.nombre,
-        descripcion: programa.descripcion, 
-        nivel: programa.nivelEducativo, 
-        modalidad: programa.modalidad, 
-        duracion: {
-          valor: programa.duracion.valor, 
-          unidad: programa.duracion.unidad 
-        }
-      });
-    } catch (error: any) {
-      return reply.status(400).send({ message: error.message });
-    };
+  instance.put('/:programaId', {
+    schema: {
+      tags: TAG,
+      summary: 'Actualizar un Programa Académico existente',
+      description: 'Actualiza los datos de un programa academico existente.',
+      params: ProgramaIdParamsSchema,
+      body: {
+        type: 'object',
+        properties: {
+          nombre: { type: 'string', description: 'Nuevo nombre del programa' },
+          descripcion: { type: 'string', description: 'Nueva descripción del programa' },
+        },
+        required: ['nombre', 'descripcion'], 
+      },
+      response: {
+        200: {
+          ...ProgramaRespuestaSchema,
+          description: 'Programa Académico actualizado exitosamente.', 
+        },
+        400: {
+          ...ErrorRespuestaSchema,
+          description: 'Solicitud inválida (ej: datos de actualización faltantes o incorrectos).', 
+        },
+        404: {
+          ...ErrorRespuestaSchema,
+          description: 'No se encontró el programa académico a actualizar.', 
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const { programaId } = request.params as ProgramaIdParams;
+    const programaActualizado = await actualizarProgramaAcademicoUseCase.execute(
+      programaId,
+      request.body as ActualizarProgramaDto
+    );
+    return programaActualizado;
   });
 
-  server.put('/:id', { schema: { params: idParamSchema, body: actualizarProgramaBodySchema } }, async (request, reply) => {
-    try {
-      const { id } = request.params as { id: string };
-      const idLimpio = id?.trim();
-
-      if (!idLimpio || idLimpio.length === 0) {
-        return reply.status(400).send({ message: 'El ID es obligatorio' });
-      };
-
-      const dto = request.body as ActualizarProgramaDto;
-      const programaActualizado = await actualizarProgramaUseCase.execute(idLimpio, dto);
-
-      return reply.send({
-        id: programaActualizado.id, 
-        nombre: programaActualizado.nombre,
-        descripcion: programaActualizado.descripcion, 
-        nivel: programaActualizado.nivelEducativo, 
-        modalidad: programaActualizado.modalidad, 
-        duracion: {
-          valor: programaActualizado.duracion.valor, 
-          unidad: programaActualizado.duracion.unidad 
-        }
-      });
-    } catch (error: any) {
-      if (error.message.includes('no encontrado')) {
-        return reply.status(404).send({ message: error.message });
-      };
-      return reply.status(400).send({ message: error.message });
-    };
+  instance.delete('/:programaId', {
+    schema: {
+      tags: TAG,
+      summary: 'Eliminar Programa Académico por ID',
+      description: 'Elimina un programa academico del sistema por su ID.',
+      params: ProgramaIdParamsSchema,
+      response: {
+        204: { type: 'null', description: 'Programa eliminado exitosamente' },
+        404: {
+          ...ErrorRespuestaSchema,
+          description: 'No se encontró el programa académico a eliminar.',
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const { programaId } = request.params as ProgramaIdParams;
+    await eliminarProgramaAcademicoUseCase.execute(programaId);
+    return reply.code(204).send();
   });
-
-  server.delete('/:id', async (request, reply) => {
-    try {
-      const { id } = request.params as { id: string };
-      const idLimpio = id?.trim();
-
-      if (!idLimpio || idLimpio.length === 0) {
-        return reply.status(400).send({ message: 'El ID es obligatorio' });
-      };
-
-      await eliminarProgramaUseCase.execute(idLimpio);
-      return reply.status(204).send();
-    } catch (error: any) {
-      if (error.message.includes('no encontrado')) {
-        return reply.status(404).send({ message: error.message });
-      };
-      return reply.status(400).send({ message: error.message });
-    };
-  });
-};
-
-const crearProgramaBodySchema = {
-  type: 'object',
-  required: ['nombre', 'descripcion', 'nivel', 'modalidad', 'duracionValor', 'duracionUnidad'],
-  properties: {
-    nombre: { type: 'string', minLength: 1 },
-    descripcion: { type: 'string', minLength: 1 },
-    nivel: { type: 'string', enum: ['Técnico', 'Pregrado', 'Posgrado', 'Doctorado'] },
-    modalidad: { type: 'string', enum: ['Presencial', 'Virtual', 'Semi-Presencial'] },
-    duracionValor: { type: 'number', minimum: 0.01 },
-    duracionUnidad: { type: 'string', enum: ['meses', 'años', 'semestres', 'trimestres'] }
-  },
-  additionalProperties: false
-};
-
-const actualizarProgramaBodySchema = {
-  type: 'object',
-  required: ['nombre', 'descripcion'],
-  properties: {
-    nombre: { type: 'string', minLength: 1 },
-    descripcion: { type: 'string', minLength: 1 }
-  },
-  additionalProperties: false
-};
-
-const idParamSchema = {
-  type: 'object',
-  required: ['id'],
-  properties: {
-    id: { type: 'string', minLength: 1 }
-  },
-  additionalProperties: false
-};
+}

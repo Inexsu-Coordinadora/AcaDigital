@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: API de Gestión Académica - Unicursos
+  title: API de Gestión Académica - AcaDigital
   version: 1.0.0
   description: API que gestiona el catálogo de asignaturas, programas académicos, períodos y la oferta de cursos.
 servers:
