@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
     "migrate": "tsx --env-file .env scripts/run-migrations.js",
     "start": "node dist/server.js",

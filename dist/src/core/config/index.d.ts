@@ -1,0 +1,7 @@
+export interface AppConfig {
+    NODE_ENV: 'development' | 'production' | 'test';
+    PORT: number;
+    DATABASE_URL: string;
+}
+export declare const configuracion: AppConfig;
+//# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,16 @@
+import type { TipoAsignatura } from "../entidades/asignatura/Asignatura.js";
+export interface IAsignatura {
+    id: number;
+    nombre: string;
+    cargaHoraria: number;
+    tipo: TipoAsignatura;
+    fechaCreacion: Date;
+    fechaActualizacion: Date;
+    getId?(): number;
+    getNombre?(): string;
+    getCargaHoraria?(): number;
+    getTipo?(): TipoAsignatura;
+    getFechaCreacion?(): Date;
+    getFechaActualizacion?(): Date;
+}
+//# sourceMappingURL=IAsignatura.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"ObtenerAsignaturasUseCase.js","sourceRoot":"","sources":["../../../../../../src/core/aplicaciones/asignatura/casos-de-uso/ObtenerAsignaturasUseCase.ts"],"names":[],"mappings":"AAGA,MAAM,OAAO,yBAAyB;IACL;IAA7B,YAA6B,WAAmC;QAAnC,gBAAW,GAAX,WAAW,CAAwB;IAAG,CAAC;IAEpE,KAAK,CAAC,OAAO;QACT,OAAO,IAAI,CAAC,WAAW,CAAC,YAAY,EAAE,CAAC;IAC3C,CAAC;CACJ"}

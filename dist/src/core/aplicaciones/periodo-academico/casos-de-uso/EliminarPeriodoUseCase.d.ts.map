@@ -1,0 +1,1 @@
+{"version":3,"file":"EliminarPeriodoUseCase.d.ts","sourceRoot":"","sources":["../../../../../../src/core/aplicaciones/periodo-academico/casos-de-uso/EliminarPeriodoUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,yEAAyE,CAAC;AAInH,qBAAa,sBAAsB;IACnB,OAAO,CAAC,IAAI;gBAAJ,IAAI,EAAE,mBAAmB;IAEvC,QAAQ,CAAC,EAAE,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC;CAO5C"}
