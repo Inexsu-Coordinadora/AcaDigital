@@ -54,9 +54,9 @@ export class PlanEstudioPGRepository implements IPlanEstudioRepositorio {
             RETURNING *
         `;
         const values = [programaId, asignaturaId, semestreNivel, creditosCarga];
-        const { rows } = await pool.query<PlanEstudioRow>(query, values);
+    const { rows } = await pool.query<PlanEstudioRow>(query, values);
 
-        return this.mapear(rows[0]);
+    return this.mapear(rows[0]!);
     }
 
     async listarPorPrograma(programaId: string): Promise<IPlanEstudio[]> {
@@ -65,9 +65,9 @@ export class PlanEstudioPGRepository implements IPlanEstudioRepositorio {
             WHERE programa_id = $1
             ORDER BY semestre_nivel ASC
         `;
-        const { rows } = await pool.query<PlanEstudioRow>(query, [programaId]);
+    const { rows } = await pool.query<PlanEstudioRow>(query, [programaId]);
         
-        return rows.map(row => this.mapear(row));
+    return rows.map(row => this.mapear(row));
     }
 
     async obtener(programaId: string, asignaturaId: number): Promise<IPlanEstudio | null> {
@@ -76,9 +76,9 @@ export class PlanEstudioPGRepository implements IPlanEstudioRepositorio {
             FROM plan_estudio
             WHERE programa_id = $1 AND asignatura_id = $2
         `;
-        const { rows } = await pool.query<PlanEstudioRow>(query, [programaId, asignaturaId]);
+    const { rows } = await pool.query<PlanEstudioRow>(query, [programaId, asignaturaId]);
 
-        return rows.length > 0 ? this.mapear(rows[0]) : null;
+    return rows.length > 0 ? this.mapear(rows[0]!) : null;
     }
 
     async actualizar(
@@ -112,9 +112,9 @@ export class PlanEstudioPGRepository implements IPlanEstudioRepositorio {
             RETURNING *
         `;
 
-        const { rows } = await pool.query<PlanEstudioRow>(query, valores);
+    const { rows } = await pool.query<PlanEstudioRow>(query, valores);
 
-        return rows.length > 0 ? this.mapear(rows[0]) : null;
+    return rows.length > 0 ? this.mapear(rows[0]!) : null;
     }
 
     async eliminar(programaId: string, asignaturaId: number): Promise<void> {

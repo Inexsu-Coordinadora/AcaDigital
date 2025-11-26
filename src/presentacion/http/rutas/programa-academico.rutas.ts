@@ -7,15 +7,7 @@ import {
   ActualizarProgramaAcademicoUseCase,
   EliminarProgramaAcademicoUseCase,
 } from '../../../core/aplicaciones/programa-academico/index.js';
-
-interface CrearProgramaDto {
-  nombre: string;
-  descripcion: string;
-  nivel: string;
-  modalidad: string;
-  duracionValor: number;
-  duracionUnidad: 'meses' | 'años' | 'semestres' | 'trimestres';
-}
+import type { CrearProgramaDto } from '../../../core/aplicaciones/programa-academico/index.js';
 
 interface ActualizarProgramaDto {
   nombre: string;
@@ -101,7 +93,7 @@ export default async function rutasProgramaAcademico(
   instance.post('/', {
     schema: {
       tags: TAG,
-      summary: 'Crear un nuevo Programa Académico',
+      summary: 'Crear un nuevo Programa Academico',
       description: 'Registra un nuevo programa academico en el sistema.',
       body: {
         type: 'object',
@@ -122,7 +114,7 @@ export default async function rutasProgramaAcademico(
         },
         400: {
           ...ErrorRespuestaSchema,
-          description: 'Solicitud inválida (ej: datos de entrada faltantes o incorrectos).', 
+          description: 'Solicitud invalida (ej: datos de entrada faltantes o incorrectos).', 
         },
         409: {
           ...ErrorRespuestaSchema,
@@ -138,13 +130,13 @@ export default async function rutasProgramaAcademico(
   instance.get('/', {
     schema: {
       tags: TAG,
-      summary: 'Listar todos los Programas Académicos',
-      description: 'Obtiene un listado completo de todos los programas académicos registrados.',
+      summary: 'Listar todos los Programas Academicos',
+      description: 'Obtiene un listado completo de todos los programas academicos registrados.',
       response: {
         200: {
           type: 'array',
           items: ProgramaRespuestaSchema,
-          description: 'Listado de Programas Académicos obtenido exitosamente.',
+          description: 'Listado de Programas Academico obtenido exitosamente.',
         },
         500: {
           ...ErrorRespuestaSchema,
@@ -160,17 +152,17 @@ export default async function rutasProgramaAcademico(
   instance.get('/:programaId', {
     schema: {
       tags: TAG,
-      summary: 'Obtener Programa Académico por ID',
+      summary: 'Obtener Programa Academico por ID',
       description: 'Busca y retorna un programa academico específico por su ID.',
       params: ProgramaIdParamsSchema,
       response: {
         200: {
           ...ProgramaRespuestaSchema,
-          description: 'Programa Académico encontrado.',
+          description: 'Programa Academico encontrado.',
         },
         404: {
           ...ErrorRespuestaSchema,
-          description: 'No se encontró el programa académico con el ID especificado.',
+          description: 'No se encontro el programa academico con el ID especificado.',
         },
       },
     },
@@ -197,15 +189,15 @@ export default async function rutasProgramaAcademico(
       response: {
         200: {
           ...ProgramaRespuestaSchema,
-          description: 'Programa Académico actualizado exitosamente.', 
+          description: 'Programa Academico actualizado exitosamente.', 
         },
         400: {
           ...ErrorRespuestaSchema,
-          description: 'Solicitud inválida (ej: datos de actualización faltantes o incorrectos).', 
+          description: 'Solicitud invalida (ej: datos de actualización faltantes o incorrectos).', 
         },
         404: {
           ...ErrorRespuestaSchema,
-          description: 'No se encontró el programa académico a actualizar.', 
+          description: 'No se encontro el programa académico a actualizar.', 
         },
       },
     },

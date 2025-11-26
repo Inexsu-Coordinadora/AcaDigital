@@ -1,4 +1,3 @@
-// src/core/config/index.ts
 import * as dotenv from 'dotenv';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
