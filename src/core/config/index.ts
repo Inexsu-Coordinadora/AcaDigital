@@ -4,7 +4,10 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
-dotenv.config({ path: resolve(__dirname, '../../../../.env') });
+
+if (process.env.AZURE !== 'true') {
+  dotenv.config({ path: resolve(__dirname, '../../../../.env') });
+}
 
 export interface AppConfig {
     NODE_ENV: 'development' | 'production' | 'test';
