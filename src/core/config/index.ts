@@ -31,11 +31,11 @@ function validacionConfiguracion(): AppConfig {
 
     cofiguracion.DATABASE_URL = obtenerEnv('DATABASE_URL');
 
-    const puertoStr = env.PORT || '8080';
+    const puertoStr = env.PORT || '3000';;
     cofiguracion.PORT = parseInt(puertoStr, 10);
 
     if (isNaN(cofiguracion.PORT) || cofiguracion.PORT < 1 || cofiguracion.PORT > 65535) {
-        console.error(`ERROR DE CONFIGURACION: PORT no es válido. Usando 8080.`);
+        console.error(`ERROR DE CONFIGURACION: PORT debe ser un numero valido (1-65535), Valor actual: ${puertoStr}`);
         cofiguracion.PORT = 8080;
     };
 
