@@ -1,0 +1,18 @@
+meta {
+  name: error-fecha-invalida
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:3000/api/v1/periodos/a9679896-e53e-4827-8e1d-86eafc250986
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+         "fechaInicio": "2024-01-01",
+         "fechaFin": "2025-12-31"
+  }
+}

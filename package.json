@@ -5,10 +5,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node dist/src/presentacion/http/server.js",
+    "build": "tsc",
     "dev": "tsx watch --env-file .env src/presentacion/http/server.ts",
-    "migrate": "ts-node -r dotenv/config scripts/run-migrations.js",
+    "migrate": "tsx --env-file .env scripts/run-migrations.js",
+    "start": "node dist/server.js",
     "test": "jest",
-    "start": "node dist/server.js"
+    "test:watch": "jest --watch",
+    "test:unit": "jest --testPathPattern=./src/core/aplicaciones/.*",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -22,18 +27,22 @@
   },
   "homepage": "https://github.com/OscarCalle0/AcaDigital#readme",
   "dependencies": {
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.3",
     "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
     "pg": "^8.16.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
-    "uuid": "^13.0.0",
-    "zod": "^4.1.12"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.0",
     "@types/pg": "^8.15.6",
     "@types/sequelize": "^4.28.20",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

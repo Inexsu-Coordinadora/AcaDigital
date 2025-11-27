@@ -1,0 +1,573 @@
+openapi: 3.0.0
+info:
+  title: API de Gestión Académica - AcaDigital
+  version: 1.0.0
+  description: API que gestiona el catálogo de asignaturas, programas académicos, períodos y la oferta de cursos.
+servers:
+  - url: /api/v1
+    description: Servidor Principal
+tags:
+  - name: Asignaturas
+    description: Gestión del catálogo de Asignaturas.
+  - name: Programas Academicos
+    description: Gestión de Programas (Carreras) y Planes de Estudio.
+  - name: Periodos Academicos
+    description: Gestión de los ciclos o semestres académicos (Ej. 2024-I).
+  - name: Ofertas Academicas
+    description: Creación de la oferta de una asignatura en un período/programa específico.
+
+paths:
+  /asignaturas:
+    post:
+      tags: [Asignaturas]
+      summary: Crear una nueva asignatura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearAsignatura'
+      responses:
+        '201':
+          description: Asignatura creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asignatura'
+        '400':
+          description: Solicitud Inválida (Error de validación de esquema o regla de negocio).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRespuesta'
+        '409':
+          description: Conflicto (La asignatura ya existe por nombre).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRespuesta'
+    get:
+      tags: [Asignaturas]
+      summary: Obtener todas las asignaturas
+      responses:
+        '200':
+          description: Lista de asignaturas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asignatura'
+  
+  /asignaturas/{id}:
+    get:
+      tags: [Asignaturas]
+      summary: Obtener una asignatura por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Asignatura encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asignatura'
+        '404':
+          description: Asignatura no encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRespuesta'
+    put:
+      tags: [Asignaturas]
+      summary: Actualizar una asignatura existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearAsignatura'
+      responses:
+        '200':
+          description: Asignatura actualizada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asignatura'
+        '404':
+          description: Asignatura no encontrada para actualizar.
+        '409':
+          description: Conflicto (Otro nombre de asignatura ya existe).
+    delete:
+      tags: [Asignaturas]
+      summary: Eliminar una asignatura por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '204':
+          description: Eliminada exitosamente (Sin contenido).
+        '404':
+          description: Asignatura no encontrada para eliminar.
+
+  /periodos:
+    post:
+      tags: [Periodos Academicos]
+      summary: Crear un nuevo período académico
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearPeriodoAcademico'
+      responses:
+        '201':
+          description: Período creado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodoAcademico'
+        '400':
+          description: Solicitud Inválida (Validación de fechas, formato, o conflicto de solapamiento).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRespuestaSimple'
+    get:
+      tags: [Periodos Academicos]
+      summary: Listar todos los períodos académicos (opcionalmente por estado)
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ACTIVO, INACTIVO, CERRADO] 
+            description: Filtra por el estado actual del período.
+      responses:
+        '200':
+          description: Lista de períodos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PeriodoAcademico'
+
+  /periodos/{id}:
+    get:
+      tags: [Periodos Academicos]
+      summary: Obtener un período académico por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid 
+      responses:
+        '200':
+          description: Período encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodoAcademico'
+        '404':
+          description: No encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorRespuestaSimple'
+    put:
+      tags: [Periodos Academicos]
+      summary: Actualizar un período académico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearPeriodoAcademico'
+      responses:
+        '200':
+          description: Período actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodoAcademico'
+        '400':
+          description: Solicitud Inválida (Validación de fechas, solapamiento o transición de estado).
+        '404':
+          description: Período no encontrado.
+    delete:
+      tags: [Periodos Academicos]
+      summary: Eliminar un período académico por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Eliminado exitosamente.
+        '404':
+          description: Período no encontrado para eliminar.
+
+  /programas-academicos:
+    post:
+      tags: [Programas Academicos]
+      summary: Crear un nuevo programa académico (carrera)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearProgramaAcademico'
+      responses:
+        '201':
+          description: Programa creado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramaAcademico'
+        '400':
+          description: Error de validación.
+
+    get:
+      tags: [Programas Academicos]
+      summary: Listar todos los programas académicos
+      responses:
+        '200':
+          description: Lista de programas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProgramaAcademico'
+        '500':
+          description: Error interno del servidor.
+  
+  /programas-academicos/{programaId}:
+    get:
+      tags: [Programas Academicos]
+      summary: Obtener programa académico por ID
+      parameters:
+        - name: programaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: El ID único del programa académico.
+      responses:
+        '200':
+          description: Programa encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramaAcademico'
+        '400':
+          description: ID obligatorio o inválido.
+        '404':
+          description: Programa no encontrado.
+    put:
+      tags: [Programas Academicos]
+      summary: Actualizar programa académico
+      parameters:
+        - name: programaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarProgramaAcademico' 
+      responses:
+        '200':
+          description: Programa actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramaAcademico'
+        '400':
+          description: Error de validación.
+        '404':
+          description: Programa no encontrado.
+    delete:
+      tags: [Programas Academicos]
+      summary: Eliminar programa académico
+      parameters:
+        - name: programaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Eliminado exitosamente.
+        '400':
+          description: ID obligatorio o inválido.
+        '404':
+          description: Programa no encontrado.
+
+  /programas-academicos/{programaId}/plan-estudio:
+    post:
+      tags: [Programas Academicos]
+      summary: Asignar asignatura al Plan de Estudio de un Programa
+      parameters:
+        - name: programaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: ID del programa al que se le agrega el plan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefinirPlanEstudio'
+      responses:
+        '201':
+          description: Vínculo asignatura-programa creado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VinculoPlanEstudio' 
+        '400':
+          description: Error de validación (Ej. créditos < 0.01, semestre < 1).
+        '404':
+          description: Programa o Asignatura no encontrada.
+        '409':
+          description: Conflicto (La asignatura ya está registrada en el Plan).
+
+  /ofertas:
+    post:
+      tags: [Ofertas Academicas]
+      summary: Ofertar una asignatura para un período y programa específico
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOfertaAcademica'
+      responses:
+        '201':
+          description: Oferta creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfertaAcademica'
+        '400':
+          description: Solicitud Inválida (Validación de grupo, cupo, etc.).
+        '404':
+          description: Período, Programa o Asignatura no encontrada.
+        '409':
+          description: Conflicto (La oferta ya existe para ese grupo/período).
+
+
+components:
+  schemas:
+    CrearAsignatura:
+      type: object
+      required: [nombre, cargaHoraria, tipo]
+      properties:
+        nombre:
+          type: string
+          minLength: 3
+          description: Nombre completo de la asignatura.
+        cargaHoraria:
+          type: number
+          minimum: 1
+          description: Carga horaria o número de créditos de la asignatura.
+        tipo:
+          type: string
+          enum: [TEORICA, PRACTICA]
+          description: Tipo de la asignatura.
+    Asignatura:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        cargaHoraria:
+          type: number
+        tipo:
+          type: string
+          enum: [TEORICA, PRACTICA]
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    CrearPeriodoAcademico:
+      type: object
+      required: [nombre, fechaInicio, fechaFin]
+      properties:
+        nombre:
+          type: string
+          pattern: '^[0-9]{4}-[IVX]+$'
+          description: Nombre del período (Ej. 2024-I).
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+    PeriodoAcademico:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+        estado:
+          type: string 
+          
+    CrearProgramaAcademico:
+      type: object
+      properties:
+        nombre: { type: 'string' }
+        descripcion: { type: 'string' }
+        nivel: { type: 'string' } 
+        modalidad: { type: 'string' } 
+        duracion:
+          type: object
+          properties:
+            valor: { type: 'number' }
+            unidad: { type: 'string' }
+          required: [valor, unidad]
+    ActualizarProgramaAcademico:
+      allOf:
+        - $ref: '#/components/schemas/CrearProgramaAcademico'
+        - type: object
+          properties:
+            nombre: { type: 'string', description: 'Opcional si solo se actualiza la descripción.' }
+          required: []
+    ProgramaAcademico:
+      type: object
+      properties:
+        id: { type: 'string', format: 'uuid' }
+        nombre: { type: 'string' }
+        descripcion: { type: 'string' }
+        nivel: { type: 'string' }
+        modalidad: { type: 'string' }
+        duracion:
+          type: object
+          properties:
+            valor: { type: 'number' }
+            unidad: { type: 'string' }
+          required: [valor, unidad]
+
+    DefinirPlanEstudio:
+      type: object
+      required: [asignaturaId, semestreNivel, creditosCarga]
+      properties:
+        asignaturaId:
+          type: integer
+          minimum: 1
+        semestreNivel:
+          type: integer
+          minimum: 1
+          description: Semestre o nivel en el que se imparte la asignatura (Ej. 1 para primer semestre).
+        creditosCarga:
+          type: number
+          minimum: 0.01
+          description: Número de créditos asignados a la asignatura dentro del programa.
+    VinculoPlanEstudio:
+      type: object
+      properties:
+        programaId: { type: 'string', format: 'uuid' }
+        asignaturaId: { type: 'integer' }
+        semestreNivel: { type: 'integer' }
+        creditosCarga: { type: 'number' }
+
+    CrearOfertaAcademica:
+      type: object
+      required: [periodoId, programaId, asignaturaId, grupo, cupoDisponible]
+      properties:
+        periodoId:
+          type: string
+          format: uuid
+        programaId:
+          type: string
+          format: uuid
+        asignaturaId:
+          type: integer
+          minimum: 1
+        grupo:
+          type: string
+          pattern: '^[a-zA-Z0-9]{1,10}$'
+        cupoDisponible:
+          type: integer
+          minimum: 1
+    OfertaAcademica:
+      type: object
+      properties:
+        id: { type: 'integer' }
+        periodoId: { type: 'string', format: 'uuid' }
+        programaId: { type: 'string', format: 'uuid' }
+        asignaturaId: { type: 'integer' }
+        grupo: { type: 'string' }
+        cupoDisponible: { type: 'integer' }
+        fechaCreacion: { type: 'string', format: 'date-time' }
+        fechaActualizacion: { type: 'string', format: 'date-time' }
+
+    ErrorRespuesta:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Descripción corta del error (Ej. "Asignatura no encontrada").
+        detalle:
+          type: string
+        codigo:
+          type: string
+          enum: [NO_ENCONTRADO, CONFLICTO, ERROR_REGLA_NEGOCIO, ERROR_VALIDACION, REQUEST_VALIDATION_FAILED, INTERNAL_SERVER_ERROR]
+      required: [error]
+    ErrorRespuestaSimple: 
+      type: object
+      properties:
+        error: { type: 'string' }
+      required: [error]

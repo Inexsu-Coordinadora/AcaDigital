@@ -1,0 +1,19 @@
+meta {
+  name: error-solapamiento
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/v1/periodos/24e1a1d7-cf33-49e2-85b7-f7195b09c93e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "estado": "activo",
+    "fechaInicio": "2024-04-01",
+    "fechaFin": "2024-10-01"
+  }
+}

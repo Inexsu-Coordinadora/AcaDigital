@@ -1,0 +1,24 @@
+meta {
+  name: error-asignatura-no-encontrada
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/api/v1/planes-estudio/5819a361-e0cb-41ef-83c9-92b1c4c17768/error-asignatura-no-encontrada
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "asignaturaId": 99,
+    "semestreNivel": 1,
+    "creditosCarga": 2
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

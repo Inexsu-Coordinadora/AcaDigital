@@ -1,7 +1,10 @@
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
 import { PeriodoAcademico } from '../../../dominio/entidades/periodo-academico/PeriodoAcademico.js';
 import type { IPeriodoAcademico } from '../../../dominio/interfaces/IPeriodoAcademico.js';
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { ActualizarPeriodoDTO } from '../dtos/ActualizarPeriodoDTO.js';
+
+import { ErrorNoEncontrado, ErrorConflicto, ErrorReglaNegocio } from '../../../errores/ErrorAplicacion.js';
 
 export class ActualizarPeriodoUseCase {
     constructor(private repo: IPeriodoRepositorio) { };
@@ -9,7 +12,7 @@ export class ActualizarPeriodoUseCase {
     async ejecutar(id: string, input: ActualizarPeriodoDTO): Promise<IPeriodoAcademico> {
         const periodoProps = await this.repo.obtenerPorId(id);
         if (!periodoProps) {
-            throw new Error('Periodo no encontrado');
+            throw new ErrorNoEncontrado ('Periodo no encontrado');
         };
 
         const periodoEntidad = new PeriodoAcademico(periodoProps);
@@ -17,7 +20,7 @@ export class ActualizarPeriodoUseCase {
         // Validaciones
         if (input.nombre && input.nombre !== periodoEntidad.nombre) {
             const existe = await this.repo.obtenerPorNombre(input.nombre);
-            if (existe) throw new Error('Nombre ya en uso');
+            if (existe) throw new ErrorConflicto ('Nombre ya en uso');
             periodoEntidad.nombre = input.nombre;
         };
 
@@ -25,30 +28,30 @@ export class ActualizarPeriodoUseCase {
         const nuevaFechaFin = input.fechaFin ? new Date(input.fechaFin) : periodoEntidad.fechaFin;
 
         if (nuevaFechaFin <= nuevaFechaInicio) {
-            throw new Error('La fecha de fin debe ser posterior a la fecha de inicio.');
+            throw new ErrorReglaNegocio ('La fecha de fin debe ser posterior a la fecha de inicio.');
         }
 
         periodoEntidad.fechaInicio = nuevaFechaInicio;
         periodoEntidad.fechaFin = nuevaFechaFin;
 
         if (input.estado && input.estado !== periodoEntidad.estado) {
-            if (input.estado === 'activo') {
+            if (input.estado === EstadoPeriodo.ACTIVO) {
                 periodoEntidad.activar();
-            } else if (input.estado === 'cerrado') {
+            } else if (input.estado === EstadoPeriodo.CERRADO) {
                 periodoEntidad.cerrar();
-            } else if (input.estado === 'inactivo') {
-                throw new Error('Transición de estado inválida: no se puede pasar a "inactivo" directamente.');
+            } else if (input.estado === EstadoPeriodo.INACTIVO) {
+                throw new ErrorReglaNegocio ('Transicion de estado invalida: no se puede pasar a "inactivo" directamente.');
             }
         }
 
-        if (periodoEntidad.estado === 'activo') {
+        if (periodoEntidad.estado === EstadoPeriodo.ACTIVO) {
             const periodosTraslapados = await this.repo.obtenerPeriodosActivosTraslapados(
                 periodoEntidad.fechaInicio,
                 periodoEntidad.fechaFin,
                 periodoEntidad.id
             );
             if (periodosTraslapados && periodosTraslapados.length > 0) {
-                throw new Error('El período se solapa con otro período activo existente.');
+                throw new ErrorConflicto ('El periodo se solapa con otro periodo activo existente.');
             }
         }
 

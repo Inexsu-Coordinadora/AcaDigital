@@ -5,6 +5,10 @@ import { OfertaAcademica } from '../../../dominio/entidades/oferta-academica/Ofe
 import type { IPeriodoRepositorio } from '../../../dominio/interfaces/repositorio/IPeriodoAcademicoRepositorio.js';
 import type { IProgramaAcademicoRepositorio } from '../../../dominio/interfaces/repositorio/IProgramaAcademicoRepositorio.js';
 import type { IAsignaturaRepositorio } from '../../../dominio/interfaces/repositorio/IAsignaturaRepositorio.js';
+import { EstadoPeriodo } from '../../../dominio/entidades/periodo-academico/EstadoPeriodo.js';
+
+
+import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorConflicto } from '../../../errores/ErrorAplicacion.js';
 
 export class OfertarAsignaturaUseCase {
     constructor(
@@ -12,30 +16,41 @@ export class OfertarAsignaturaUseCase {
         private readonly periodoRepositorio: IPeriodoRepositorio,
         private readonly programaRepositorio: IProgramaAcademicoRepositorio,
         private readonly asignaturaRepositorio: IAsignaturaRepositorio,
-    ) {}
+    ) { }
 
     async ejecutar(dto: OfertarAsignaturaDTO): Promise<IOfertaAcademica> {
         const { periodoId, programaId, asignaturaId, grupo, cupoDisponible } = dto;
 
         const periodo = await this.periodoRepositorio.obtenerPorId(periodoId);
         if (!periodo) {
-            throw new Error(`404: Periodo con ID ${periodoId} no encontrado.`);
-        }
+            throw new ErrorNoEncontrado(`Periodo con ID ${periodoId} no encontrado.`);
+        };
 
         const programa = await this.programaRepositorio.obtenerPorId(programaId);
         if (!programa) {
-            throw new Error(`404: Programa con ID ${programaId} no encontrado.`);
-        }
+            throw new ErrorNoEncontrado(`Programa con ID ${programaId} no encontrado.`);
+        };
 
         const asignatura = await this.asignaturaRepositorio.obtenerPorId(asignaturaId);
         if (!asignatura) {
-            throw new Error(`404: Asignatura con ID ${asignaturaId} no encontrada.`);
-        }
+            throw new ErrorNoEncontrado(`Asignatura con ID ${asignaturaId} no encontrada.`);
+        };
 
         if (periodo.estado !== 'activo') {
-            throw new Error(`400: El periodo ${periodo.nombre} no está activo para crear ofertas. Estado actual: ${periodo.estado}.`);
+            throw new ErrorReglaNegocio(`El periodo ${periodo.nombre} no esta activo para crear ofertas. Estado actual: ${periodo.estado}.`);
+        };
+
+        const ofertaExistente = await this.ofertaRepositorio.buscarPorClaveUnica(
+            periodoId, 
+            programaId, 
+            asignaturaId, 
+            grupo 
+        );
+
+        if (ofertaExistente) {
+            throw new ErrorConflicto('Ya existe una oferta académica con estos mismos datos.');
         }
-        
+
         const nuevaOferta = new OfertaAcademica(
             periodoId,
             programaId,
@@ -45,5 +60,5 @@ export class OfertarAsignaturaUseCase {
         );
 
         return this.ofertaRepositorio.guardar(nuevaOferta);
-    }
-}
+    };
+};

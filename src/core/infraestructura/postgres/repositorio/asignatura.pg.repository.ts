@@ -3,8 +3,17 @@ import { Asignatura, TipoAsignatura } from '../../../dominio/entidades/asignatur
 import type { IAsignatura } from '../../../dominio/interfaces/IAsignatura.js'; 
 import { pool } from '../database/Conexion.js'; 
 
+interface AsignaturaRow {
+    id: number;
+    nombre: string;
+    carga_horaria: number;
+    tipo: string;
+    fecha_creacion: string;
+    fecha_actualizacion: string;
+}
+
 export class AsignaturaPGRepository implements IAsignaturaRepositorio {
-    private mapearFilaAAsignatura(fila: any): IAsignatura {
+    private mapearFilaAAsignatura(fila: AsignaturaRow): IAsignatura {
         return new Asignatura(
             fila.nombre,
             fila.carga_horaria, 
@@ -16,14 +25,27 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
     }
 
     async guardar(asignatura: IAsignatura): Promise<IAsignatura> {
-        if (asignatura.getId()) {
+        if (asignatura.id > 0) {
             const sql = `UPDATE asignaturas SET nombre = $1, carga_horaria = $2, tipo = $3, fecha_actualizacion = NOW() WHERE id = $4 RETURNING *;`;
-            const valores = [asignatura.getNombre(), asignatura.getCargaHoraria(), asignatura.getTipo(), asignatura.getId()];
+            
+            const valores = [
+                asignatura.nombre, 
+                asignatura.cargaHoraria, 
+                asignatura.tipo, 
+                asignatura.id 
+            ];
+            
             const resultado = await pool.query(sql, valores); 
             return this.mapearFilaAAsignatura(resultado.rows[0]);
         } else {
             const sql = `INSERT INTO asignaturas (nombre, carga_horaria, tipo) VALUES ($1, $2, $3) RETURNING *;`;
-            const valores = [asignatura.getNombre(), asignatura.getCargaHoraria(), asignatura.getTipo()];
+            
+            const valores = [
+                asignatura.nombre, 
+                asignatura.cargaHoraria, 
+                asignatura.tipo
+            ];
+            
             const resultado = await pool.query(sql, valores); 
             return this.mapearFilaAAsignatura(resultado.rows[0]);
         };
@@ -53,4 +75,4 @@ export class AsignaturaPGRepository implements IAsignaturaRepositorio {
         if (resultado.rows.length === 0) return null;
         return this.mapearFilaAAsignatura(resultado.rows[0]);
     };
-};
+}
